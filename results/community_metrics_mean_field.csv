@@ -1,0 +1,757 @@
+"";"year";"plot";"guilds";"metric";"value"
+"1";2019;1;"plants";"richness";14
+"2";2020;1;"plants";"richness";14
+"3";2019;2;"plants";"richness";14
+"4";2020;2;"plants";"richness";14
+"5";2019;3;"plants";"richness";14
+"6";2020;3;"plants";"richness";14
+"7";2019;4;"plants";"richness";10
+"8";2020;4;"plants";"richness";10
+"9";2019;5;"plants";"richness";12
+"10";2020;5;"plants";"richness";12
+"11";2019;6;"plants";"richness";9
+"12";2020;6;"plants";"richness";9
+"13";2019;7;"plants";"richness";17
+"14";2020;7;"plants";"richness";17
+"15";2019;8;"plants";"richness";16
+"16";2020;8;"plants";"richness";16
+"17";2019;9;"plants";"richness";16
+"18";2020;9;"plants";"richness";16
+"19";2019;1;"floral visitors";"richness";10
+"20";2020;1;"floral visitors";"richness";15
+"21";2019;2;"floral visitors";"richness";8
+"22";2020;2;"floral visitors";"richness";15
+"23";2019;3;"floral visitors";"richness";9
+"24";2020;3;"floral visitors";"richness";14
+"25";2019;4;"floral visitors";"richness";9
+"26";2020;4;"floral visitors";"richness";5
+"27";2019;5;"floral visitors";"richness";7
+"28";2020;5;"floral visitors";"richness";5
+"29";2019;6;"floral visitors";"richness";9
+"30";2020;6;"floral visitors";"richness";2
+"31";2019;7;"floral visitors";"richness";17
+"32";2020;7;"floral visitors";"richness";11
+"33";2019;8;"floral visitors";"richness";20
+"34";2020;8;"floral visitors";"richness";19
+"35";2019;9;"floral visitors";"richness";10
+"36";2020;9;"floral visitors";"richness";16
+"37";2019;1;"herbivores";"richness";18
+"38";2020;1;"herbivores";"richness";18
+"39";2019;2;"herbivores";"richness";15
+"40";2020;2;"herbivores";"richness";19
+"41";2019;3;"herbivores";"richness";15
+"42";2020;3;"herbivores";"richness";19
+"43";2019;4;"herbivores";"richness";15
+"44";2020;4;"herbivores";"richness";17
+"45";2019;5;"herbivores";"richness";16
+"46";2020;5;"herbivores";"richness";15
+"47";2019;6;"herbivores";"richness";19
+"48";2020;6;"herbivores";"richness";19
+"49";2019;7;"herbivores";"richness";14
+"50";2020;7;"herbivores";"richness";16
+"51";2019;8;"herbivores";"richness";15
+"52";2020;8;"herbivores";"richness";17
+"53";2019;9;"herbivores";"richness";19
+"54";2020;9;"herbivores";"richness";18
+"55";2019;1;"plants-floral visitors";"richness";24
+"56";2020;1;"plants-floral visitors";"richness";29
+"57";2019;2;"plants-floral visitors";"richness";22
+"58";2020;2;"plants-floral visitors";"richness";29
+"59";2019;3;"plants-floral visitors";"richness";23
+"60";2020;3;"plants-floral visitors";"richness";28
+"61";2019;4;"plants-floral visitors";"richness";19
+"62";2020;4;"plants-floral visitors";"richness";15
+"63";2019;5;"plants-floral visitors";"richness";19
+"64";2020;5;"plants-floral visitors";"richness";17
+"65";2019;6;"plants-floral visitors";"richness";18
+"66";2020;6;"plants-floral visitors";"richness";11
+"67";2019;7;"plants-floral visitors";"richness";34
+"68";2020;7;"plants-floral visitors";"richness";28
+"69";2019;8;"plants-floral visitors";"richness";36
+"70";2020;8;"plants-floral visitors";"richness";35
+"71";2019;9;"plants-floral visitors";"richness";26
+"72";2020;9;"plants-floral visitors";"richness";32
+"73";2019;1;"plants-herbivores";"richness";32
+"74";2020;1;"plants-herbivores";"richness";32
+"75";2019;2;"plants-herbivores";"richness";29
+"76";2020;2;"plants-herbivores";"richness";33
+"77";2019;3;"plants-herbivores";"richness";29
+"78";2020;3;"plants-herbivores";"richness";33
+"79";2019;4;"plants-herbivores";"richness";25
+"80";2020;4;"plants-herbivores";"richness";27
+"81";2019;5;"plants-herbivores";"richness";28
+"82";2020;5;"plants-herbivores";"richness";27
+"83";2019;6;"plants-herbivores";"richness";28
+"84";2020;6;"plants-herbivores";"richness";28
+"85";2019;7;"plants-herbivores";"richness";31
+"86";2020;7;"plants-herbivores";"richness";33
+"87";2019;8;"plants-herbivores";"richness";31
+"88";2020;8;"plants-herbivores";"richness";33
+"89";2019;9;"plants-herbivores";"richness";35
+"90";2020;9;"plants-herbivores";"richness";34
+"91";2019;1;"all";"richness";42
+"92";2020;1;"all";"richness";47
+"93";2019;2;"all";"richness";37
+"94";2020;2;"all";"richness";48
+"95";2019;3;"all";"richness";38
+"96";2020;3;"all";"richness";47
+"97";2019;4;"all";"richness";34
+"98";2020;4;"all";"richness";32
+"99";2019;5;"all";"richness";35
+"100";2020;5;"all";"richness";32
+"101";2019;6;"all";"richness";37
+"102";2020;6;"all";"richness";30
+"103";2019;7;"all";"richness";48
+"104";2020;7;"all";"richness";44
+"105";2019;8;"all";"richness";51
+"106";2020;8;"all";"richness";52
+"107";2019;9;"all";"richness";45
+"108";2020;9;"all";"richness";50
+"109";2019;1;"plants";"connectance";1
+"110";2020;1;"plants";"connectance";1
+"111";2019;2;"plants";"connectance";1
+"112";2020;2;"plants";"connectance";1
+"113";2019;3;"plants";"connectance";1
+"114";2020;3;"plants";"connectance";1
+"115";2019;4;"plants";"connectance";1
+"116";2020;4;"plants";"connectance";1
+"117";2019;5;"plants";"connectance";1
+"118";2020;5;"plants";"connectance";1
+"119";2019;6;"plants";"connectance";1
+"120";2020;6;"plants";"connectance";1
+"121";2019;7;"plants";"connectance";1
+"122";2020;7;"plants";"connectance";1
+"123";2019;8;"plants";"connectance";1
+"124";2020;8;"plants";"connectance";1
+"125";2019;9;"plants";"connectance";1
+"126";2020;9;"plants";"connectance";1
+"127";2019;1;"floral visitors";"connectance";1
+"128";2020;1;"floral visitors";"connectance";1
+"129";2019;2;"floral visitors";"connectance";1
+"130";2020;2;"floral visitors";"connectance";1
+"131";2019;3;"floral visitors";"connectance";1
+"132";2020;3;"floral visitors";"connectance";1
+"133";2019;4;"floral visitors";"connectance";1
+"134";2020;4;"floral visitors";"connectance";1
+"135";2019;5;"floral visitors";"connectance";1
+"136";2020;5;"floral visitors";"connectance";1
+"137";2019;6;"floral visitors";"connectance";1
+"138";2020;6;"floral visitors";"connectance";1
+"139";2019;7;"floral visitors";"connectance";1
+"140";2020;7;"floral visitors";"connectance";1
+"141";2019;8;"floral visitors";"connectance";1
+"142";2020;8;"floral visitors";"connectance";1
+"143";2019;9;"floral visitors";"connectance";1
+"144";2020;9;"floral visitors";"connectance";1
+"145";2019;1;"herbivores";"connectance";1
+"146";2020;1;"herbivores";"connectance";1
+"147";2019;2;"herbivores";"connectance";1
+"148";2020;2;"herbivores";"connectance";1
+"149";2019;3;"herbivores";"connectance";1
+"150";2020;3;"herbivores";"connectance";1
+"151";2019;4;"herbivores";"connectance";1
+"152";2020;4;"herbivores";"connectance";1
+"153";2019;5;"herbivores";"connectance";1
+"154";2020;5;"herbivores";"connectance";1
+"155";2019;6;"herbivores";"connectance";1
+"156";2020;6;"herbivores";"connectance";1
+"157";2019;7;"herbivores";"connectance";1
+"158";2020;7;"herbivores";"connectance";1
+"159";2019;8;"herbivores";"connectance";1
+"160";2020;8;"herbivores";"connectance";1
+"161";2019;9;"herbivores";"connectance";1
+"162";2020;9;"herbivores";"connectance";1
+"163";2019;1;"plants-floral visitors";"connectance";0,576388888888889
+"164";2020;1;"plants-floral visitors";"connectance";0,545778834720571
+"165";2019;2;"plants-floral visitors";"connectance";0,59504132231405
+"166";2020;2;"plants-floral visitors";"connectance";0,557669441141498
+"167";2019;3;"plants-floral visitors";"connectance";0,5765595463138
+"168";2020;3;"plants-floral visitors";"connectance";0,558673469387755
+"169";2019;4;"plants-floral visitors";"connectance";0,578947368421053
+"170";2020;4;"plants-floral visitors";"connectance";0,6
+"171";2019;5;"plants-floral visitors";"connectance";0,595567867036011
+"172";2020;5;"plants-floral visitors";"connectance";0,619377162629758
+"173";2019;6;"plants-floral visitors";"connectance";0,580246913580247
+"174";2020;6;"plants-floral visitors";"connectance";0,752066115702479
+"175";2019;7;"plants-floral visitors";"connectance";0,55363321799308
+"176";2020;7;"plants-floral visitors";"connectance";0,563775510204082
+"177";2019;8;"plants-floral visitors";"connectance";0,557098765432099
+"178";2020;8;"plants-floral visitors";"connectance";0,555918367346939
+"179";2019;9;"plants-floral visitors";"connectance";0,57396449704142
+"180";2020;9;"plants-floral visitors";"connectance";0,54296875
+"181";2019;1;"plants-herbivores";"connectance";0,568359375
+"182";2020;1;"plants-herbivores";"connectance";0,5625
+"183";2019;2;"plants-herbivores";"connectance";0,574316290130797
+"184";2020;2;"plants-herbivores";"connectance";0,566574839302112
+"185";2019;3;"plants-herbivores";"connectance";0,562425683709869
+"186";2020;3;"plants-herbivores";"connectance";0,573921028466483
+"187";2019;4;"plants-herbivores";"connectance";0,6
+"188";2020;4;"plants-herbivores";"connectance";0,61042524005487
+"189";2019;5;"plants-herbivores";"connectance";0,579081632653061
+"190";2020;5;"plants-herbivores";"connectance";0,577503429355281
+"191";2019;6;"plants-herbivores";"connectance";0,635204081632653
+"192";2020;6;"plants-herbivores";"connectance";0,630102040816326
+"193";2019;7;"plants-herbivores";"connectance";0,59417273673257
+"194";2020;7;"plants-herbivores";"connectance";0,594123048668503
+"195";2019;8;"plants-herbivores";"connectance";0,585848074921956
+"196";2020;8;"plants-herbivores";"connectance";0,60514233241506
+"197";2019;9;"plants-herbivores";"connectance";0,575510204081633
+"198";2020;9;"plants-herbivores";"connectance";0,576124567474048
+"199";2019;1;"all";"connectance";0,511396011396011
+"200";2020;1;"all";"connectance";0,502696225284602
+"201";2019;2;"all";"connectance";0,509300265721878
+"202";2020;2;"all";"connectance";0,513264129181084
+"203";2019;3;"all";"connectance";0,495741056218058
+"204";2020;3;"all";"connectance";0,516994633273703
+"205";2019;4;"all";"connectance";0,54627539503386
+"206";2020;4;"all";"connectance";0,562060889929742
+"207";2019;5;"all";"connectance";0,524475524475524
+"208";2020;5;"all";"connectance";0,521739130434783
+"209";2019;6;"all";"connectance";0,589094449853944
+"210";2020;6;"all";"connectance";0,611650485436893
+"211";2019;7;"all";"connectance";0,50437636761488
+"212";2020;7;"all";"connectance";0,505050505050505
+"213";2019;8;"all";"connectance";0,51424287856072
+"214";2020;8;"all";"connectance";0,526724975704568
+"215";2019;9;"all";"connectance";0,508814589665654
+"216";2020;9;"all";"connectance";0,502079002079002
+"217";2019;1;"plants";"intra_inter_ratio";0,384615384615385
+"218";2020;1;"plants";"intra_inter_ratio";0,384615384615385
+"219";2019;2;"plants";"intra_inter_ratio";0,384615384615385
+"220";2020;2;"plants";"intra_inter_ratio";0,384615384615385
+"221";2019;3;"plants";"intra_inter_ratio";0,384615384615385
+"222";2020;3;"plants";"intra_inter_ratio";0,384615384615385
+"223";2019;4;"plants";"intra_inter_ratio";0,555555555555556
+"224";2020;4;"plants";"intra_inter_ratio";0,555555555555556
+"225";2019;5;"plants";"intra_inter_ratio";0,454545454545455
+"226";2020;5;"plants";"intra_inter_ratio";0,454545454545455
+"227";2019;6;"plants";"intra_inter_ratio";0,625
+"228";2020;6;"plants";"intra_inter_ratio";0,625
+"229";2019;7;"plants";"intra_inter_ratio";0,3125
+"230";2020;7;"plants";"intra_inter_ratio";0,3125
+"231";2019;8;"plants";"intra_inter_ratio";0,333333333333333
+"232";2020;8;"plants";"intra_inter_ratio";0,333333333333333
+"233";2019;9;"plants";"intra_inter_ratio";0,333333333333333
+"234";2020;9;"plants";"intra_inter_ratio";0,333333333333333
+"235";2019;1;"floral visitors";"intra_inter_ratio";0,555555555555556
+"236";2020;1;"floral visitors";"intra_inter_ratio";0,357142857142857
+"237";2019;2;"floral visitors";"intra_inter_ratio";0,714285714285714
+"238";2020;2;"floral visitors";"intra_inter_ratio";0,357142857142857
+"239";2019;3;"floral visitors";"intra_inter_ratio";0,625
+"240";2020;3;"floral visitors";"intra_inter_ratio";0,384615384615385
+"241";2019;4;"floral visitors";"intra_inter_ratio";0,625
+"242";2020;4;"floral visitors";"intra_inter_ratio";1,25
+"243";2019;5;"floral visitors";"intra_inter_ratio";0,833333333333333
+"244";2020;5;"floral visitors";"intra_inter_ratio";1,25
+"245";2019;6;"floral visitors";"intra_inter_ratio";0,625
+"246";2020;6;"floral visitors";"intra_inter_ratio";5
+"247";2019;7;"floral visitors";"intra_inter_ratio";0,3125
+"248";2020;7;"floral visitors";"intra_inter_ratio";0,5
+"249";2019;8;"floral visitors";"intra_inter_ratio";0,263157894736842
+"250";2020;8;"floral visitors";"intra_inter_ratio";0,277777777777778
+"251";2019;9;"floral visitors";"intra_inter_ratio";0,555555555555556
+"252";2020;9;"floral visitors";"intra_inter_ratio";0,333333333333333
+"253";2019;1;"herbivores";"intra_inter_ratio";0,294117647058824
+"254";2020;1;"herbivores";"intra_inter_ratio";0,294117647058824
+"255";2019;2;"herbivores";"intra_inter_ratio";0,357142857142857
+"256";2020;2;"herbivores";"intra_inter_ratio";0,277777777777778
+"257";2019;3;"herbivores";"intra_inter_ratio";0,357142857142857
+"258";2020;3;"herbivores";"intra_inter_ratio";0,277777777777778
+"259";2019;4;"herbivores";"intra_inter_ratio";0,357142857142857
+"260";2020;4;"herbivores";"intra_inter_ratio";0,3125
+"261";2019;5;"herbivores";"intra_inter_ratio";0,333333333333333
+"262";2020;5;"herbivores";"intra_inter_ratio";0,357142857142857
+"263";2019;6;"herbivores";"intra_inter_ratio";0,277777777777778
+"264";2020;6;"herbivores";"intra_inter_ratio";0,277777777777778
+"265";2019;7;"herbivores";"intra_inter_ratio";0,384615384615385
+"266";2020;7;"herbivores";"intra_inter_ratio";0,333333333333333
+"267";2019;8;"herbivores";"intra_inter_ratio";0,357142857142857
+"268";2020;8;"herbivores";"intra_inter_ratio";0,3125
+"269";2019;9;"herbivores";"intra_inter_ratio";0,277777777777778
+"270";2020;9;"herbivores";"intra_inter_ratio";0,294117647058824
+"271";2019;1;"plants-floral visitors";"intra_inter_ratio";0,458015267175572
+"272";2020;1;"plants-floral visitors";"intra_inter_ratio";0,379581151832461
+"273";2019;2;"plants-floral visitors";"intra_inter_ratio";0,482456140350877
+"274";2020;2;"plants-floral visitors";"intra_inter_ratio";0,379581151832461
+"275";2019;3;"plants-floral visitors";"intra_inter_ratio";0,471311475409836
+"276";2020;3;"plants-floral visitors";"intra_inter_ratio";0,395480225988701
+"277";2019;4;"plants-floral visitors";"intra_inter_ratio";0,624045218454018
+"278";2020;4;"plants-floral visitors";"intra_inter_ratio";0,74468085106383
+"279";2019;5;"plants-floral visitors";"intra_inter_ratio";0,579268292682927
+"280";2020;5;"plants-floral visitors";"intra_inter_ratio";0,598591549295775
+"281";2019;6;"plants-floral visitors";"intra_inter_ratio";0,669469598965071
+"282";2020;6;"plants-floral visitors";"intra_inter_ratio";0,859375
+"283";2019;7;"plants-floral visitors";"intra_inter_ratio";0,318352059925094
+"284";2020;7;"plants-floral visitors";"intra_inter_ratio";0,376344086021505
+"285";2019;8;"plants-floral visitors";"intra_inter_ratio";0,295081967213115
+"286";2020;8;"plants-floral visitors";"intra_inter_ratio";0,305944055944056
+"287";2019;9;"plants-floral visitors";"intra_inter_ratio";0,40625
+"288";2020;9;"plants-floral visitors";"intra_inter_ratio";0,340425531914894
+"289";2019;1;"plants-herbivores";"intra_inter_ratio";0,327868852459016
+"290";2020;1;"plants-herbivores";"intra_inter_ratio";0,327868852459016
+"291";2019;2;"plants-herbivores";"intra_inter_ratio";0,369897959183673
+"292";2020;2;"plants-herbivores";"intra_inter_ratio";0,314885496183206
+"293";2019;3;"plants-herbivores";"intra_inter_ratio";0,369897959183673
+"294";2020;3;"plants-herbivores";"intra_inter_ratio";0,314885496183206
+"295";2019;4;"plants-herbivores";"intra_inter_ratio";0,416666666666667
+"296";2020;4;"plants-herbivores";"intra_inter_ratio";0,37292817679558
+"297";2019;5;"plants-herbivores";"intra_inter_ratio";0,376344086021505
+"298";2020;5;"plants-herbivores";"intra_inter_ratio";0,394736842105263
+"299";2019;6;"plants-herbivores";"intra_inter_ratio";0,338164251207729
+"300";2020;6;"plants-herbivores";"intra_inter_ratio";0,338164251207729
+"301";2019;7;"plants-herbivores";"intra_inter_ratio";0,341409691629956
+"302";2020;7;"plants-herbivores";"intra_inter_ratio";0,322265625
+"303";2019;8;"plants-herbivores";"intra_inter_ratio";0,344444444444444
+"304";2020;8;"plants-herbivores";"intra_inter_ratio";0,322265625
+"305";2019;9;"plants-herbivores";"intra_inter_ratio";0,300687285223368
+"306";2020;9;"plants-herbivores";"intra_inter_ratio";0,311355311355311
+"307";2019;1;"all";"intra_inter_ratio";0,369718309859155
+"308";2020;1;"all";"intra_inter_ratio";0,34156976744186
+"309";2019;2;"all";"intra_inter_ratio";0,422374429223744
+"310";2020;2;"all";"intra_inter_ratio";0,331491712707182
+"311";2019;3;"all";"intra_inter_ratio";0,418502202643172
+"312";2020;3;"all";"intra_inter_ratio";0,33764367816092
+"313";2019;4;"all";"intra_inter_ratio";0,469311761684643
+"314";2020;4;"all";"intra_inter_ratio";0,429283250287466
+"315";2019;5;"all";"intra_inter_ratio";0,433168316831683
+"316";2020;5;"all";"intra_inter_ratio";0,454545454545455
+"317";2019;6;"all";"intra_inter_ratio";0,388300784814747
+"318";2020;6;"all";"intra_inter_ratio";0,369458128078818
+"319";2019;7;"all";"intra_inter_ratio";0,335195530726257
+"320";2020;7;"all";"intra_inter_ratio";0,359477124183007
+"321";2019;8;"all";"intra_inter_ratio";0,310975609756098
+"322";2020;8;"all";"intra_inter_ratio";0,308056872037915
+"323";2019;9;"all";"intra_inter_ratio";0,33987915407855
+"324";2020;9;"all";"intra_inter_ratio";0,322164948453608
+"325";2019;1;"plants";"degree_distribution";0
+"326";2020;1;"plants";"degree_distribution";0
+"327";2019;2;"plants";"degree_distribution";0
+"328";2020;2;"plants";"degree_distribution";0
+"329";2019;3;"plants";"degree_distribution";0
+"330";2020;3;"plants";"degree_distribution";0
+"331";2019;4;"plants";"degree_distribution";0
+"332";2020;4;"plants";"degree_distribution";0
+"333";2019;5;"plants";"degree_distribution";0
+"334";2020;5;"plants";"degree_distribution";0
+"335";2019;6;"plants";"degree_distribution";0
+"336";2020;6;"plants";"degree_distribution";0
+"337";2019;7;"plants";"degree_distribution";0
+"338";2020;7;"plants";"degree_distribution";0
+"339";2019;8;"plants";"degree_distribution";0
+"340";2020;8;"plants";"degree_distribution";0
+"341";2019;9;"plants";"degree_distribution";0
+"342";2020;9;"plants";"degree_distribution";0
+"343";2019;1;"floral visitors";"degree_distribution";0
+"344";2020;1;"floral visitors";"degree_distribution";0
+"345";2019;2;"floral visitors";"degree_distribution";0
+"346";2020;2;"floral visitors";"degree_distribution";0
+"347";2019;3;"floral visitors";"degree_distribution";0
+"348";2020;3;"floral visitors";"degree_distribution";0
+"349";2019;4;"floral visitors";"degree_distribution";0
+"350";2020;4;"floral visitors";"degree_distribution";0
+"351";2019;5;"floral visitors";"degree_distribution";0
+"352";2020;5;"floral visitors";"degree_distribution";0
+"353";2019;6;"floral visitors";"degree_distribution";0
+"354";2020;6;"floral visitors";"degree_distribution";0
+"355";2019;7;"floral visitors";"degree_distribution";0
+"356";2020;7;"floral visitors";"degree_distribution";0
+"357";2019;8;"floral visitors";"degree_distribution";0
+"358";2020;8;"floral visitors";"degree_distribution";0
+"359";2019;9;"floral visitors";"degree_distribution";0
+"360";2020;9;"floral visitors";"degree_distribution";0
+"361";2019;1;"herbivores";"degree_distribution";0
+"362";2020;1;"herbivores";"degree_distribution";0
+"363";2019;2;"herbivores";"degree_distribution";0
+"364";2020;2;"herbivores";"degree_distribution";0
+"365";2019;3;"herbivores";"degree_distribution";0
+"366";2020;3;"herbivores";"degree_distribution";0
+"367";2019;4;"herbivores";"degree_distribution";0
+"368";2020;4;"herbivores";"degree_distribution";0
+"369";2019;5;"herbivores";"degree_distribution";0
+"370";2020;5;"herbivores";"degree_distribution";0
+"371";2019;6;"herbivores";"degree_distribution";0
+"372";2020;6;"herbivores";"degree_distribution";0
+"373";2019;7;"herbivores";"degree_distribution";0
+"374";2020;7;"herbivores";"degree_distribution";0
+"375";2019;8;"herbivores";"degree_distribution";0
+"376";2020;8;"herbivores";"degree_distribution";0
+"377";2019;9;"herbivores";"degree_distribution";0
+"378";2020;9;"herbivores";"degree_distribution";0
+"379";2019;1;"plants-floral visitors";"degree_distribution";0,0918674698795181
+"380";2020;1;"plants-floral visitors";"degree_distribution";0,0601006686199383
+"381";2019;2;"plants-floral visitors";"degree_distribution";0,121843434343434
+"382";2020;2;"plants-floral visitors";"degree_distribution";0,0676420851407984
+"383";2019;3;"plants-floral visitors";"degree_distribution";0,1071988595866
+"384";2020;3;"plants-floral visitors";"degree_distribution";0,0593607305936073
+"385";2019;4;"plants-floral visitors";"degree_distribution";0,0725258121380005
+"386";2020;4;"plants-floral visitors";"degree_distribution";0,132345679012346
+"387";2019;5;"plants-floral visitors";"degree_distribution";0,119461444308446
+"388";2020;5;"plants-floral visitors";"degree_distribution";0,143936904370687
+"389";2019;6;"plants-floral visitors";"degree_distribution";0,0874704491725768
+"390";2020;6;"plants-floral visitors";"degree_distribution";0,127872127872128
+"391";2019;7;"plants-floral visitors";"degree_distribution";0,0597426470588235
+"392";2020;7;"plants-floral visitors";"degree_distribution";0,103587588881707
+"393";2019;8;"plants-floral visitors";"degree_distribution";0,0856417359187442
+"394";2020;8;"plants-floral visitors";"degree_distribution";0,073673169708412
+"395";2019;9;"plants-floral visitors";"degree_distribution";0,111022997620936
+"396";2020;9;"plants-floral visitors";"degree_distribution";0,0459757194244603
+"397";2019;1;"plants-herbivores";"degree_distribution";0,100945017182131
+"398";2020;1;"plants-herbivores";"degree_distribution";0,0925564236111112
+"399";2019;2;"plants-herbivores";"degree_distribution";0,0826729492396659
+"400";2020;2;"plants-herbivores";"degree_distribution";0,103433033740975
+"401";2019;3;"plants-herbivores";"degree_distribution";0,071298388860538
+"402";2020;3;"plants-herbivores";"degree_distribution";0,102012121212121
+"403";2019;4;"plants-herbivores";"degree_distribution";0,115626666666667
+"404";2020;4;"plants-herbivores";"degree_distribution";0,127507282563462
+"405";2019;5;"plants-herbivores";"degree_distribution";0,101164254247955
+"406";2020;5;"plants-herbivores";"degree_distribution";0,101170053664115
+"407";2019;6;"plants-herbivores";"degree_distribution";0,138841078600115
+"408";2020;6;"plants-herbivores";"degree_distribution";0,134615384615385
+"409";2019;7;"plants-herbivores";"degree_distribution";0,0854189028868426
+"410";2020;7;"plants-herbivores";"degree_distribution";0,0763430284295817
+"411";2019;8;"plants-herbivores";"degree_distribution";0,0735690139231079
+"412";2020;8;"plants-herbivores";"degree_distribution";0,0790913689244493
+"413";2019;9;"plants-herbivores";"degree_distribution";0,0798378926038501
+"414";2020;9;"plants-herbivores";"degree_distribution";0,0762232821056351
+"415";2019;1;"all";"degree_distribution";0,144913118450723
+"416";2020;1;"all";"degree_distribution";0,0930185377729313
+"417";2019;2;"all";"degree_distribution";0,149471210340776
+"418";2020;2;"all";"degree_distribution";0,10126404494382
+"419";2019;3;"all";"degree_distribution";0,132211973232049
+"420";2020;3;"all";"degree_distribution";0,108567081400771
+"421";2019;4;"all";"degree_distribution";0,144020418084589
+"422";2020;4;"all";"degree_distribution";0,201822916666667
+"423";2019;5;"all";"degree_distribution";0,164244897959184
+"424";2020;5;"all";"degree_distribution";0,174890350877193
+"425";2019;6;"all";"degree_distribution";0,172079517534063
+"426";2020;6;"all";"degree_distribution";0,173015873015873
+"427";2019;7;"all";"degree_distribution";0,0943600867678958
+"428";2020;7;"all";"degree_distribution";0,137102272727273
+"429";2019;8;"all";"degree_distribution";0,105146820633015
+"430";2020;8;"all";"degree_distribution";0,0838064149872268
+"431";2019;9;"all";"degree_distribution";0,148838444178946
+"432";2020;9;"all";"degree_distribution";0,0838509316770187
+"433";2019;1;"plants";"skewness";-1
+"434";2020;1;"plants";"skewness";-1
+"435";2019;2;"plants";"skewness";-1
+"436";2020;2;"plants";"skewness";-1
+"437";2019;3;"plants";"skewness";-1
+"438";2020;3;"plants";"skewness";-1
+"439";2019;4;"plants";"skewness";-1
+"440";2020;4;"plants";"skewness";-1
+"441";2019;5;"plants";"skewness";-1
+"442";2020;5;"plants";"skewness";-1
+"443";2019;6;"plants";"skewness";-1
+"444";2020;6;"plants";"skewness";-1
+"445";2019;7;"plants";"skewness";-1
+"446";2020;7;"plants";"skewness";-1
+"447";2019;8;"plants";"skewness";-1
+"448";2020;8;"plants";"skewness";-1
+"449";2019;9;"plants";"skewness";-1
+"450";2020;9;"plants";"skewness";-1
+"451";2019;1;"floral visitors";"skewness";-1
+"452";2020;1;"floral visitors";"skewness";-1
+"453";2019;2;"floral visitors";"skewness";-1
+"454";2020;2;"floral visitors";"skewness";-1
+"455";2019;3;"floral visitors";"skewness";-1
+"456";2020;3;"floral visitors";"skewness";-1
+"457";2019;4;"floral visitors";"skewness";-1
+"458";2020;4;"floral visitors";"skewness";-1
+"459";2019;5;"floral visitors";"skewness";-1
+"460";2020;5;"floral visitors";"skewness";-1
+"461";2019;6;"floral visitors";"skewness";-1
+"462";2020;6;"floral visitors";"skewness";-5,55111512312578e-17
+"463";2019;7;"floral visitors";"skewness";-1
+"464";2020;7;"floral visitors";"skewness";-1
+"465";2019;8;"floral visitors";"skewness";-1
+"466";2020;8;"floral visitors";"skewness";-1
+"467";2019;9;"floral visitors";"skewness";-1
+"468";2020;9;"floral visitors";"skewness";-1
+"469";2019;1;"herbivores";"skewness";-1
+"470";2020;1;"herbivores";"skewness";-1
+"471";2019;2;"herbivores";"skewness";-1
+"472";2020;2;"herbivores";"skewness";-1
+"473";2019;3;"herbivores";"skewness";-1
+"474";2020;3;"herbivores";"skewness";-1
+"475";2019;4;"herbivores";"skewness";-1
+"476";2020;4;"herbivores";"skewness";-1
+"477";2019;5;"herbivores";"skewness";-1
+"478";2020;5;"herbivores";"skewness";-1
+"479";2019;6;"herbivores";"skewness";-1
+"480";2020;6;"herbivores";"skewness";-1
+"481";2019;7;"herbivores";"skewness";-1
+"482";2020;7;"herbivores";"skewness";-1
+"483";2019;8;"herbivores";"skewness";-1
+"484";2020;8;"herbivores";"skewness";-1
+"485";2019;9;"herbivores";"skewness";-1
+"486";2020;9;"herbivores";"skewness";-1
+"487";2019;1;"plants-floral visitors";"skewness";1
+"488";2020;1;"plants-floral visitors";"skewness";1
+"489";2019;2;"plants-floral visitors";"skewness";1
+"490";2020;2;"plants-floral visitors";"skewness";1
+"491";2019;3;"plants-floral visitors";"skewness";1
+"492";2020;3;"plants-floral visitors";"skewness";0
+"493";2019;4;"plants-floral visitors";"skewness";1
+"494";2020;4;"plants-floral visitors";"skewness";1
+"495";2019;5;"plants-floral visitors";"skewness";1
+"496";2020;5;"plants-floral visitors";"skewness";1
+"497";2019;6;"plants-floral visitors";"skewness";0
+"498";2020;6;"plants-floral visitors";"skewness";1
+"499";2019;7;"plants-floral visitors";"skewness";0
+"500";2020;7;"plants-floral visitors";"skewness";1
+"501";2019;8;"plants-floral visitors";"skewness";1
+"502";2020;8;"plants-floral visitors";"skewness";1
+"503";2019;9;"plants-floral visitors";"skewness";1
+"504";2020;9;"plants-floral visitors";"skewness";0
+"505";2019;1;"plants-herbivores";"skewness";1
+"506";2020;1;"plants-herbivores";"skewness";1
+"507";2019;2;"plants-herbivores";"skewness";1
+"508";2020;2;"plants-herbivores";"skewness";1
+"509";2019;3;"plants-herbivores";"skewness";1
+"510";2020;3;"plants-herbivores";"skewness";1
+"511";2019;4;"plants-herbivores";"skewness";1
+"512";2020;4;"plants-herbivores";"skewness";1
+"513";2019;5;"plants-herbivores";"skewness";1
+"514";2020;5;"plants-herbivores";"skewness";1
+"515";2019;6;"plants-herbivores";"skewness";1
+"516";2020;6;"plants-herbivores";"skewness";1
+"517";2019;7;"plants-herbivores";"skewness";1
+"518";2020;7;"plants-herbivores";"skewness";1
+"519";2019;8;"plants-herbivores";"skewness";1
+"520";2020;8;"plants-herbivores";"skewness";1
+"521";2019;9;"plants-herbivores";"skewness";1
+"522";2020;9;"plants-herbivores";"skewness";1
+"523";2019;1;"all";"skewness";-1
+"524";2020;1;"all";"skewness";-1
+"525";2019;2;"all";"skewness";-1
+"526";2020;2;"all";"skewness";-1
+"527";2019;3;"all";"skewness";-1
+"528";2020;3;"all";"skewness";-1
+"529";2019;4;"all";"skewness";-1
+"530";2020;4;"all";"skewness";-1
+"531";2019;5;"all";"skewness";-1
+"532";2020;5;"all";"skewness";-1
+"533";2019;6;"all";"skewness";-1
+"534";2020;6;"all";"skewness";-0,239457831325301
+"535";2019;7;"all";"skewness";-1
+"536";2020;7;"all";"skewness";-1
+"537";2019;8;"all";"skewness";-1
+"538";2020;8;"all";"skewness";-1
+"539";2019;9;"all";"skewness";-1
+"540";2020;9;"all";"skewness";-1
+"541";2019;1;"plants";"modularity";0,175396825396825
+"542";2020;1;"plants";"modularity";0,175396825396825
+"543";2019;2;"plants";"modularity";0,175396825396825
+"544";2020;2;"plants";"modularity";0,175396825396825
+"545";2019;3;"plants";"modularity";0,175396825396825
+"546";2020;3;"plants";"modularity";0,175396825396825
+"547";2019;4;"plants";"modularity";0,218571428571429
+"548";2020;4;"plants";"modularity";0,218571428571429
+"549";2019;5;"plants";"modularity";0,194791666666667
+"550";2020;5;"plants";"modularity";0,194791666666667
+"551";2019;6;"plants";"modularity";0,232478632478632
+"552";2020;6;"plants";"modularity";0,232478632478632
+"553";2019;7;"plants";"modularity";0,152380952380952
+"554";2020;7;"plants";"modularity";0,152380952380952
+"555";2019;8;"plants";"modularity";0,159375
+"556";2020;8;"plants";"modularity";0,159375
+"557";2019;9;"plants";"modularity";0,159375
+"558";2020;9;"plants";"modularity";0,159375
+"559";2019;1;"floral visitors";"modularity";0,218571428571429
+"560";2020;1;"floral visitors";"modularity";0,167017543859649
+"561";2019;2;"floral visitors";"modularity";0,247916666666667
+"562";2020;2;"floral visitors";"modularity";0,167017543859649
+"563";2019;3;"floral visitors";"modularity";0,232478632478632
+"564";2020;3;"floral visitors";"modularity";0,175396825396825
+"565";2019;4;"floral visitors";"modularity";0,232478632478632
+"566";2020;4;"floral visitors";"modularity";0,302222222222222
+"567";2019;5;"floral visitors";"modularity";0,264935064935065
+"568";2020;5;"floral visitors";"modularity";0,302222222222222
+"569";2019;6;"floral visitors";"modularity";0,232478632478632
+"570";2020;6;"floral visitors";"modularity";0,283333333333333
+"571";2019;7;"floral visitors";"modularity";0,152380952380952
+"572";2020;7;"floral visitors";"modularity";0,206060606060606
+"573";2019;8;"floral visitors";"modularity";0,134583333333333
+"574";2020;8;"floral visitors";"modularity";0,140045766590389
+"575";2019;9;"floral visitors";"modularity";0,218571428571429
+"576";2020;9;"floral visitors";"modularity";0,159375
+"577";2019;1;"herbivores";"modularity";0,145959595959596
+"578";2020;1;"herbivores";"modularity";0,145959595959596
+"579";2019;2;"herbivores";"modularity";0,167017543859649
+"580";2020;2;"herbivores";"modularity";0,140045766590389
+"581";2019;3;"herbivores";"modularity";0,167017543859649
+"582";2020;3;"herbivores";"modularity";0,140045766590389
+"583";2019;4;"herbivores";"modularity";0,167017543859649
+"584";2020;4;"herbivores";"modularity";0,152380952380952
+"585";2019;5;"herbivores";"modularity";0,159375
+"586";2020;5;"herbivores";"modularity";0,167017543859649
+"587";2019;6;"herbivores";"modularity";0,140045766590389
+"588";2020;6;"herbivores";"modularity";0,140045766590389
+"589";2019;7;"herbivores";"modularity";0,175396825396825
+"590";2020;7;"herbivores";"modularity";0,159375
+"591";2019;8;"herbivores";"modularity";0,167017543859649
+"592";2020;8;"herbivores";"modularity";0,152380952380952
+"593";2019;9;"herbivores";"modularity";0,140045766590389
+"594";2020;9;"herbivores";"modularity";0,145959595959596
+"595";2019;1;"plants-floral visitors";"modularity";0,309940045559827
+"596";2020;1;"plants-floral visitors";"modularity";0,409026446293499
+"597";2019;2;"plants-floral visitors";"modularity";0,3039698868669
+"598";2020;2;"plants-floral visitors";"modularity";0,408944409952943
+"599";2019;3;"plants-floral visitors";"modularity";0,308011233158567
+"600";2020;3;"plants-floral visitors";"modularity";0,408590627587647
+"601";2019;4;"plants-floral visitors";"modularity";0,258186779990718
+"602";2020;4;"plants-floral visitors";"modularity";0,319967578018073
+"603";2019;5;"plants-floral visitors";"modularity";0,314716439668027
+"604";2020;5;"plants-floral visitors";"modularity";0,294662717146839
+"605";2019;6;"plants-floral visitors";"modularity";0,292848886567583
+"606";2020;6;"plants-floral visitors";"modularity";0,293184391435752
+"607";2019;7;"plants-floral visitors";"modularity";0,41336227765537
+"608";2020;7;"plants-floral visitors";"modularity";0,296301003864446
+"609";2019;8;"plants-floral visitors";"modularity";0,408184705021131
+"610";2020;8;"plants-floral visitors";"modularity";0,410153022903666
+"611";2019;9;"plants-floral visitors";"modularity";0,299084554035852
+"612";2020;9;"plants-floral visitors";"modularity";0,41205790832852
+"613";2019;1;"plants-herbivores";"modularity";0,403911182864336
+"614";2020;1;"plants-herbivores";"modularity";0,40445783490083
+"615";2019;2;"plants-herbivores";"modularity";0,408991594664219
+"616";2020;2;"plants-herbivores";"modularity";0,401448351446655
+"617";2019;3;"plants-herbivores";"modularity";0,409141521369347
+"618";2020;3;"plants-herbivores";"modularity";0,401076976638575
+"619";2019;4;"plants-herbivores";"modularity";0,304912007610599
+"620";2020;4;"plants-herbivores";"modularity";0,371605260606925
+"621";2019;5;"plants-herbivores";"modularity";0,302259848483989
+"622";2020;5;"plants-herbivores";"modularity";0,401200495780403
+"623";2019;6;"plants-herbivores";"modularity";0,189458131762469
+"624";2020;6;"plants-herbivores";"modularity";0,3421131174124
+"625";2019;7;"plants-herbivores";"modularity";0,406490104705732
+"626";2020;7;"plants-herbivores";"modularity";0,412217626054685
+"627";2019;8;"plants-herbivores";"modularity";0,41092924232726
+"628";2020;8;"plants-herbivores";"modularity";0,412223948335296
+"629";2019;9;"plants-herbivores";"modularity";0,41007719757981
+"630";2020;9;"plants-herbivores";"modularity";0,411554091097041
+"631";2019;1;"all";"modularity";0,526783051893083
+"632";2020;1;"all";"modularity";0,533576490453638
+"633";2019;2;"all";"modularity";0,517379982659838
+"634";2020;2;"all";"modularity";0,543557924023833
+"635";2019;3;"all";"modularity";0,525930707075814
+"636";2020;3;"all";"modularity";0,54133404215779
+"637";2019;4;"all";"modularity";0,517534069856063
+"638";2020;4;"all";"modularity";0,448549719092896
+"639";2019;5;"all";"modularity";0,50335207382702
+"640";2020;5;"all";"modularity";0,478100737256678
+"641";2019;6;"all";"modularity";0,491250999483704
+"642";2020;6;"all";"modularity";0,368756881740261
+"643";2019;7;"all";"modularity";0,54706836887097
+"644";2020;7;"all";"modularity";0,53578984153097
+"645";2019;8;"all";"modularity";0,546053191724948
+"646";2020;8;"all";"modularity";0,549845824490911
+"647";2019;9;"all";"modularity";0,526930556238724
+"648";2020;9;"all";"modularity";0,549632330544702
+"649";2019;1;"plants";"complexity";0,772873426463437
+"650";2020;1;"plants";"complexity";0,772873426463437
+"651";2019;2;"plants";"complexity";0,772873426463437
+"652";2020;2;"plants";"complexity";0,772873426463437
+"653";2019;3;"plants";"complexity";0,772873426463437
+"654";2020;3;"plants";"complexity";0,772873426463437
+"655";2019;4;"plants";"complexity";0,762770071396474
+"656";2020;4;"plants";"complexity";0,762770071396474
+"657";2019;5;"plants";"complexity";0,768615138264418
+"658";2020;5;"plants";"complexity";0,768615138264418
+"659";2019;6;"plants";"complexity";0,758946638440411
+"660";2020;6;"plants";"complexity";0,758946638440411
+"661";2019;7;"plants";"complexity";0,77746025264604
+"662";2020;7;"plants";"complexity";0,77746025264604
+"663";2019;8;"plants";"complexity";0,776114000116266
+"664";2020;8;"plants";"complexity";0,776114000116266
+"665";2019;9;"plants";"complexity";0,776114000116266
+"666";2020;9;"plants";"complexity";0,776114000116266
+"667";2019;1;"floral visitors";"complexity";0,762770071396474
+"668";2020;1;"floral visitors";"complexity";0,774596669241483
+"669";2019;2;"floral visitors";"complexity";0,754247233265651
+"670";2020;2;"floral visitors";"complexity";0,774596669241483
+"671";2019;3;"floral visitors";"complexity";0,758946638440411
+"672";2020;3;"floral visitors";"complexity";0,772873426463437
+"673";2019;4;"floral visitors";"complexity";0,758946638440411
+"674";2020;4;"floral visitors";"complexity";0,730296743340221
+"675";2019;5;"floral visitors";"complexity";0,748331477354788
+"676";2020;5;"floral visitors";"complexity";0,730296743340221
+"677";2019;6;"floral visitors";"complexity";0,758946638440411
+"678";2020;6;"floral visitors";"complexity";0,653197264742181
+"679";2019;7;"floral visitors";"complexity";0,77746025264604
+"680";2020;7;"floral visitors";"complexity";0,76594168620507
+"681";2019;8;"floral visitors";"complexity";0,780720058358827
+"682";2020;8;"floral visitors";"complexity";0,779743547584717
+"683";2019;9;"floral visitors";"complexity";0,762770071396474
+"684";2020;9;"floral visitors";"complexity";0,776114000116266
+"685";2019;1;"herbivores";"complexity";0,77866282142766
+"686";2020;1;"herbivores";"complexity";0,77866282142766
+"687";2019;2;"herbivores";"complexity";0,774596669241483
+"688";2020;2;"herbivores";"complexity";0,779743547584717
+"689";2019;3;"herbivores";"complexity";0,774596669241483
+"690";2020;3;"herbivores";"complexity";0,779743547584717
+"691";2019;4;"herbivores";"complexity";0,774596669241483
+"692";2020;4;"herbivores";"complexity";0,77746025264604
+"693";2019;5;"herbivores";"complexity";0,776114000116266
+"694";2020;5;"herbivores";"complexity";0,774596669241483
+"695";2019;6;"herbivores";"complexity";0,779743547584717
+"696";2020;6;"herbivores";"complexity";0,779743547584717
+"697";2019;7;"herbivores";"complexity";0,772873426463437
+"698";2020;7;"herbivores";"complexity";0,776114000116266
+"699";2019;8;"herbivores";"complexity";0,774596669241483
+"700";2020;8;"herbivores";"complexity";0,77746025264604
+"701";2019;9;"herbivores";"complexity";0,779743547584717
+"702";2020;9;"herbivores";"complexity";0,77866282142766
+"703";2019;1;"plants-floral visitors";"complexity";0,774809864828037
+"704";2020;1;"plants-floral visitors";"complexity";0,772337258260762
+"705";2019;2;"plants-floral visitors";"complexity";0,777792895776454
+"706";2020;2;"plants-floral visitors";"complexity";0,779983434228107
+"707";2019;3;"plants-floral visitors";"complexity";0,771033397329884
+"708";2020;3;"plants-floral visitors";"complexity";0,778168358415345
+"709";2019;4;"plants-floral visitors";"complexity";0,760191114587017
+"710";2020;4;"plants-floral visitors";"complexity";0,760929834365816
+"711";2019;5;"plants-floral visitors";"complexity";0,769820032924651
+"712";2020;5;"plants-floral visitors";"complexity";0,773989572638228
+"713";2019;6;"plants-floral visitors";"complexity";0,760927249108681
+"714";2020;6;"plants-floral visitors";"complexity";0,84505678015323
+"715";2019;7;"plants-floral visitors";"complexity";0,796355408113979
+"716";2020;7;"plants-floral visitors";"complexity";0,788812156707756
+"717";2019;8;"plants-floral visitors";"complexity";0,803799141498476
+"718";2020;8;"plants-floral visitors";"complexity";0,801117053463356
+"719";2019;9;"plants-floral visitors";"complexity";0,782477322424001
+"720";2020;9;"plants-floral visitors";"complexity";0,781557038473785
+"721";2019;1;"plants-herbivores";"complexity";0,796468345415348
+"722";2020;1;"plants-herbivores";"complexity";0,794186197199358
+"723";2019;2;"plants-herbivores";"complexity";0,787855207329705
+"724";2020;2;"plants-herbivores";"complexity";0,798978158677716
+"725";2019;3;"plants-herbivores";"complexity";0,7834299698849
+"726";2020;3;"plants-herbivores";"complexity";0,801804212715032
+"727";2019;4;"plants-herbivores";"complexity";0,787480329131373
+"728";2020;4;"plants-herbivores";"complexity";0,799349301342147
+"729";2019;5;"plants-herbivores";"complexity";0,786772538970728
+"730";2020;5;"plants-herbivores";"complexity";0,781316403558242
+"731";2019;6;"plants-herbivores";"complexity";0,820226126805144
+"732";2020;6;"plants-herbivores";"complexity";0,813386570768571
+"733";2019;7;"plants-herbivores";"complexity";0,807969421339505
+"734";2020;7;"plants-herbivores";"complexity";0,814761531242317
+"735";2019;8;"plants-herbivores";"complexity";0,807072110292897
+"736";2020;8;"plants-herbivores";"complexity";0,821692961878284
+"737";2019;9;"plants-herbivores";"complexity";0,809357114519856
+"738";2020;9;"plants-herbivores";"complexity";0,806952438327556
+"739";2019;1;"all";"complexity";0,862976969644997
+"740";2020;1;"all";"complexity";0,885994510393405
+"741";2019;2;"all";"complexity";0,835165972130442
+"742";2020;2;"all";"complexity";0,897616271100549
+"743";2019;3;"all";"complexity";0,83418973078292
+"744";2020;3;"all";"complexity";0,894395427044538
+"745";2019;4;"all";"complexity";0,877069514211177
+"746";2020;4;"all";"complexity";0,856418083240656
+"747";2019;5;"all";"complexity";0,844783482934768
+"748";2020;5;"all";"complexity";0,820778488586475
+"749";2019;6;"all";"complexity";0,927366957467928
+"750";2020;6;"all";"complexity";0,860031380411846
+"751";2019;7;"all";"complexity";0,873997284240905
+"752";2020;7;"all";"complexity";0,858901631886257
+"753";2019;8;"all";"complexity";0,901283623133864
+"754";2020;8;"all";"complexity";0,915352104176589
+"755";2019;9;"all";"complexity";0,862897629564465
+"756";2020;9;"all";"complexity";0,885896056058672
