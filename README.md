@@ -1,2 +1,1 @@
-# multitrophic_feasibility
-Code and data for the study on the feasibility domain of multi-trophic ecological communities
+Code and data for: Biotic interactions constrain opportunities to coexist in multi-trophic ecological communities
