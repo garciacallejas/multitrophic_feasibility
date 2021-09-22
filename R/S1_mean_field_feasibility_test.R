@@ -21,7 +21,7 @@ for(i.row in rows){
 fd.plot <- ggplot(df,aes(x = size, y = fd)) + 
   geom_point() +
   theme_bw() + 
-  labs(x = "community size", y = "feasibility domain") +
+  labs(x = "Community size", y = "Feasibility domain") +
   NULL
 
 ggsave(filename = paste("results/images/Fig_S3",vers,".pdf",sep=""),plot = fd.plot,

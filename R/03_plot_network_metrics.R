@@ -23,10 +23,10 @@ metrics.mf <- read.csv2(file = paste("results/community_metrics_mean_field",vers
 # join data ---------------------------------------------------------------
 
 metrics.observed$sd <- 0
-metrics.observed$type <- "observed"
+metrics.observed$type <- "Observed"
 
 metrics.mf$sd <- 0
-metrics.mf$type <- "mean field"
+metrics.mf$type <- "Mean field"
 
 metrics.null.2 <- metrics.null %>% group_by(year,plot,guilds,metric) %>%
   summarise(metrics.average = mean(value),
@@ -44,11 +44,16 @@ metrics.all$guilds <- factor(metrics.all$guilds,levels = c("plants",
                                                  "plants-floral visitors",
                                                  "plants-herbivores","all"))
 
-metrics.all$guilds <- recode(metrics.all$guilds, "floral visitors" = "pollinators",
-                        "plants-floral visitors" = "plants-pollinators")
+metrics.all$guilds <- recode(metrics.all$guilds, "plants" = "Plants", 
+                             "floral visitors" = "Pollinators",
+                             "herbivores" = "Herbivores",
+                             "plants-floral visitors" = "Plants-Pollinators",
+                             "plants-herbivores" = "Plants-Herbivores",
+                             "all" = "All")
 
-metrics.all$type <- recode(metrics.all$type, "null" = "randomized")
-metrics.all$type <- factor(metrics.all$type,levels = c("observed","randomized","mean field"))
+metrics.all$type <- recode(metrics.all$type, "observed" = "Observed","null" = "Randomized",
+                           "mean field" = "Mean field")
+metrics.all$type <- factor(metrics.all$type,levels = c("Observed","Randomized","Mean field"))
 
 # subset metrics ----------------------------------------------------------
 
@@ -59,6 +64,14 @@ metrics.all <- subset(metrics.all,metric %in% c("richness","connectance",
                                                 "skewness",
                                                 "complexity",
                                                 "modularity"))
+
+metrics.all$metric <- recode(metrics.all$metric, "richness" = "Richness", 
+                             "connectance" = "Connectance",
+                             "intra_inter_ratio" = "Intra/Intersp. ratio",
+                             "degree_distribution" = "Degree dist. het.",
+                             "skewness" = "Skewness",
+                             "complexity" = "Complexity",
+                             "modularity" = "Modularity")
 
 # plot --------------------------------------------------------------------
 
@@ -93,10 +106,10 @@ metric.means <- metrics.all %>%
             se.value = sd(value)/sqrt(n()))
 
 metric.means.v2 <- metric.means
-metric.means.v2$mean.value[metric.means.v2$metric == "intra_inter_ratio" &
-                             metric.means.v2$guilds == "all"] <- NA
-metric.means.v2$sd.value[metric.means.v2$metric == "intra_inter_ratio" &
-                             metric.means.v2$guilds == "all"] <- NA
+metric.means.v2$mean.value[metric.means.v2$metric == "Intra/Intersp. ratio" &
+                             metric.means.v2$guilds == "All"] <- NA
+metric.means.v2$sd.value[metric.means.v2$metric == "Intra/Intersp. ratio" &
+                             metric.means.v2$guilds == "All"] <- NA
 
 pd <- 0.5
 p3 <- ggplot(metric.means.v2) + 
@@ -114,10 +127,10 @@ p3 <- ggplot(metric.means.v2) +
                  fill = type),
              shape = 21, stroke = .5, size = 2.5,
              position = position_dodge(pd))+
-  scale_fill_OkabeIto(darken = 0.2) +
-  scale_color_OkabeIto(darken = 0.2) +
+  scale_fill_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
+  scale_color_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
   facet_grid(metric~guilds, scales = "free_y")+
-  labs(x = "",y = "metric value") +
+  labs(x = "",y = "Metric value") +
   theme_bw()+
   # theme(axis.text.x  = element_text(angle = 60, hjust = 1))+
   theme(strip.background = element_blank())+
@@ -125,7 +138,7 @@ p3 <- ggplot(metric.means.v2) +
   NULL
 p3
 
-m.all.ii <- subset(metric.means, guilds == "all" & metric == "intra_inter_ratio")
+m.all.ii <- subset(metric.means, guilds == "All" & metric == "Intra/Intersp. ratio")
 
 p3.2 <- ggplot(m.all.ii) + 
   
@@ -142,10 +155,10 @@ p3.2 <- ggplot(m.all.ii) +
                  fill = type),
              shape = 21, stroke = .5, size = 2.5,
              position = position_dodge(pd))+
-  scale_fill_OkabeIto(darken = 0.2) +
-  scale_color_OkabeIto(darken = 0.2) +
+  scale_fill_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
+  scale_color_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
   facet_grid(metric~guilds, scales = "free_y")+
-  labs(x = "",y = "metric_value") +
+  labs(x = "",y = "Metric value") +
   theme_bw()+
   # theme(axis.text.x  = element_text(angle = 60, hjust = 1))+
   theme(strip.background = element_blank())+
@@ -162,4 +175,4 @@ p3.3 <- p3/(p3.2 + plot_spacer() + plot_spacer()) + plot_layout(heights = c(4,1)
 
 ggsave(filename = paste("results/images/Fig_S1",vers,".pdf",sep=""),plot = p3.3,
        device = cairo_pdf,
-       width = 9,height = 9,dpi = 300)
+       width = 9,height = 10,dpi = 300)

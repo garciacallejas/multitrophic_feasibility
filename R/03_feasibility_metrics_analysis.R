@@ -65,7 +65,7 @@ pca.plot <- autoplot(pca.net, data = pca.data, fill = 'fd.average',
                      loadings.label.size = 3.5,
                      loadings.label.colour = "darkred") +
   theme_bw() + 
-  scale_fill_viridis_b(name = "feasibility\ndomain") +
+  scale_fill_viridis_b(name = "Feasibility\ndomain") +
   NULL
 # pca.plot
 
@@ -141,7 +141,7 @@ cp <- ggplot(ec.df,aes(y = fit, x = connectance.unscaled)) +
   geom_line()+
   geom_point(data = my.d3,aes(x = connectance, y = fd.average))+
   theme_bw() +
-  labs(x="connectance",y = "feasibility domain") +
+  labs(x="Connectance",y = "Feasibility domain") +
   ggtitle(label = "A)") +
   NULL
 # cp
@@ -151,7 +151,7 @@ ddp <- ggplot(ed.df,aes(y = fit, x = dd.unscaled)) +
   geom_line()+
   geom_point(data = my.d3,aes(x = degree_distribution, y = fd.average))+
   theme_bw() +
-  labs(x="Gini index of the degree distribution",y = "feasibility domain") +
+  labs(x="Gini index of the degree distribution",y = "Feasibility domain") +
   ggtitle(label = "B)") +
   NULL
 # ddp

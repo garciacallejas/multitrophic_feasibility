@@ -47,14 +47,20 @@ fd.all$guilds <- factor(fd.all$guilds,levels = c("plants",
                                                  "herbivores",
                                                  "plants-floral visitors",
                                                  "plants-herbivores","all")) 
-fd.all$guilds <- recode(fd.all$guilds, "floral visitors" = "pollinators",
-                        "plants-floral visitors" = "plants-pollinators")
+fd.all$guilds <- recode(fd.all$guilds, "plants" = "Plants", 
+                        "floral visitors" = "Pollinators",
+                        "herbivores" = "Herbivores",
+                        "plants-floral visitors" = "Plants-Pollinators",
+                        "plants-herbivores" = "Plants-Herbivores",
+                        "all" = "All")
+
 fd.all$fd.average[which(is.na(fd.all$fd.average))] <- 0
 fd.all$plot <- as.factor(fd.all$plot)
 fd.all$type <- as.factor(fd.all$type)
 
-fd.all$type <- recode(fd.all$type, "null" = "randomized")
-fd.all$type <- factor(fd.all$type,levels = c("observed","randomized","mean field"))
+fd.all$type <- recode(fd.all$type, "null" = "Randomized", "observed" = "Observed",
+                      "mean field" = "Mean field")
+fd.all$type <- factor(fd.all$type,levels = c("Observed","Randomized","Mean field"))
 
 # plot --------------------------------------------------------------------
 
@@ -90,7 +96,7 @@ p3 <- ggplot(fd.all, aes(y = type, x = fd.average)) +
   scale_fill_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
   scale_color_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
   facet_grid(guilds~.)+
-  labs(y = "",x = "feasibility domain") +
+  labs(y = "",x = "Feasibility domain") +
   # xlim(0,0.26) +
   theme_bw()+
   # theme(axis.text.x  = element_text(angle = 60, hjust = 1))+
