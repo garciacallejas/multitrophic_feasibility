@@ -43,20 +43,25 @@ obs.data <- subset(obs.data,!is.infinite(intra_inter_ratio))
 
 pca.data <- subset(obs.data, community == "all")
 
+pca.data.names <- pca.data
+names(pca.data.names)[5] <- "intra/inter ratio"
+names(pca.data.names)[7] <- "degree distribution"
+
 # SKEWNESS is maximal (-1) for all multitrophic observed communities
 # so, drop it
-pca.net <- pca.data %>% 
+pca.net <- pca.data.names %>% 
   # filter(community == "all") %>%
   dplyr::select(richness,connectance,
          complexity,
-         degree_distribution,
-         intra_inter_ratio,
+         'degree distribution',
+         'intra/inter ratio',
          # skewness,
          modularity) %>%
   prcomp(scale = TRUE)
 
+
 # nicer plot with ggfortify
-pca.plot <- autoplot(pca.net, data = pca.data, fill = 'fd.average', 
+pca.plot <- autoplot(pca.net, data = pca.data.names, fill = 'fd.average', 
                      shape = 21,
                      size = 3,
                      loadings = TRUE, 
