@@ -168,5 +168,20 @@ metrics.plot <- cp + ddp
 #        width = 8,height = 4,dpi = 300)
 
 # -------------------------------------------------------------------------
+# 3d scatterplot
+
+library(plotly)
+
+fig <- plot_ly(my.d3, x = ~connectance, 
+               y = ~degree_distribution, 
+               z = ~fd.average, size = 2)
+fig <- fig %>% add_markers()
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Connectance'),
+                                   yaxis = list(title = 'Het. Deg. Dist.'),
+                                   zaxis = list(title = 'Feasibility Domain')))
+# fig
+# save it dynamically with plotly
+
+# -------------------------------------------------------------------------
 # are connectance and degree distribution correlated?
 cd.test <- cor.test(my.d3$connectance,my.d3$degree_distribution)
