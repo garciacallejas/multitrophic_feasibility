@@ -172,15 +172,53 @@ metrics.plot <- cp + ddp
 
 library(plotly)
 
-fig <- plot_ly(my.d3, x = ~connectance, 
-               y = ~degree_distribution, 
-               z = ~fd.average, size = 2)
-fig <- fig %>% add_markers()
-fig <- fig %>% layout(scene = list(xaxis = list(title = 'Connectance'),
-                                   yaxis = list(title = 'Het. Deg. Dist.'),
-                                   zaxis = list(title = 'Feasibility Domain')))
+#Setup Axis
+axis_x <- seq(min(my.d4$connectance), max(my.d4$connectance), length.out = 5)
+axis_y <- seq(min(my.d4$degree_distribution), max(my.d4$degree_distribution), length.out = 5)
+axis_x_uns <- axis_x * sd(my.d3$connectance) + mean(my.d3$connectance)
+axis_y_uns <- axis_y * sd(my.d3$degree_distribution) + mean(my.d3$degree_distribution)
+
+#Sample points
+lm_surface <- expand.grid(connectance = axis_x,degree_distribution = axis_y,KEEP.OUT.ATTRS = F)
+lm_surface$fd.average <- predict(m1, newdata = lm_surface, type = "response")
+names(lm_surface)[1:2] <- c("c_scaled","dd_scaled")
+lm_surface$connectance <- lm_surface$c_scaled * sd(my.d3$connectance) + mean(my.d3$connectance)
+lm_surface$degree_distribution <- lm_surface$dd_scaled * sd(my.d3$degree_distribution) + mean(my.d3$degree_distribution)
+
+lm_surface2 <- matrix(xtabs(fd.average ~ connectance + degree_distribution, data = lm_surface),nrow = 5, ncol = 5)
+
+axx <- list(
+  title = 'Connectance',
+  nticks = 5,
+  range = c(0.35,0.55)
+)
+
+axy <- list(
+  title = 'Het. Deg. Dist.',
+  nticks = 4,
+  range = c(0.2,0.35)
+)
+
+axz <- list(
+  title = 'Feasibility Domain',
+  tickvals = c(0,0.05,0.1,0.15,0.2,0.25),  
+  range = list(0, 0.27)
+)
+
+fig <- plot_ly(x = ~axis_x_uns, 
+               y = ~axis_y_uns, 
+               z = ~lm_surface2,
+               type="surface", opacity = .7, showscale = FALSE) %>%
+  add_trace(data=my.d3, x=~connectance, y=~degree_distribution, z=~fd.average, 
+            mode="markers", type="scatter3d", opacity = 1, size = 1, color = "darkorange") %>%
+            # marker = list(color=cols, opacity=0.7, symbol=105)
+            # ) %>%
+  add_markers() %>% 
+  layout(scene = list(xaxis = axx,
+                      yaxis = axy,
+                      zaxis = axz),
+         showlegend = FALSE)
 # fig
-# save it dynamically with plotly
 
 # -------------------------------------------------------------------------
 # are connectance and degree distribution correlated?

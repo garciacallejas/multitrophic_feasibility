@@ -1,8 +1,7 @@
 
 # read community matrices -------------------------------------------------
 library(tidyverse)
-# devtools::install_github("RadicalCommEcol/MultitrophicFun",
-# auth_token = "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")
+# devtools::install_github("RadicalCommEcol/MultitrophicFun")
 library(MultitrophicFun)
 
 # calculate null matrices? ------------------------------------------------
