@@ -112,30 +112,3 @@ p3 <- ggplot(fd.all, aes(y = type, x = fd.average)) +
 # ggsave(filename = paste("results/images/Fig_2",vers,".pdf",sep=""),plot = p3,
 #        device = cairo_pdf,
 #        width = 4,height = 7,dpi = 300)
-
-# temporal variability ----------------------------------------------------
-# fd.tmp <- subset(fd.all,guilds == "all" & type == "observed")
-fd.tmp <- subset(fd.all,guilds == "all")
-
-fd.tmp$fd.sd <- NULL
-fd.wide <- pivot_wider(fd.tmp,names_from = year,names_prefix = "fd.",
-                       values_from = fd.average)
-
-p4 <- ggplot(fd.wide,aes(x = fd.2019,y = fd.2020)) + 
-  geom_abline(slope = 1,linetype = "dashed",color = "lightgrey") +
-  geom_point(aes(fill = type), shape = 21, size = 3) +
-  geom_text(aes(label = plot),nudge_y = 0.015) +
-  labs(x = "feasibility domain - 2019", 
-       y = "feasibility domain - 2020") +
-  scale_fill_OkabeIto(darken = 0.2, name = "") +
-  # facet_wrap(vars(plot)) +
-  facet_grid(.~type) +
-  theme_bw() +
-  theme(legend.position = "none") +
-  theme(strip.background = element_blank()) +
-  NULL
-# p4
-
-# ggsave(filename = paste("results/images/fd_year_variation",vers,".pdf",sep=""),plot = p4,
-#        device = cairo_pdf,
-#        width = 8,height = 3,dpi = 300)

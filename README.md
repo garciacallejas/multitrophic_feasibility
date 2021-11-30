@@ -1,1 +1,1 @@
-Code and data for: Biotic interactions constrain opportunities to coexist in multi-trophic ecological communities
+Code and data for: The non-random structure of multi-trophic ecological interactions maximizes species coexistence within ecologically realistic constraints

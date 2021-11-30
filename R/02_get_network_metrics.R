@@ -3,8 +3,7 @@ library(tidyverse)
 library(ineq) # for the gini index
 library(robustbase)
 library(igraph)
-# devtools::install_github("RadicalCommEcol/MultitrophicFun",
-# auth_token = "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")
+# devtools::install_github("RadicalCommEcol/MultitrophicFun")
 library(MultitrophicFun)
 
 source("R/aux_linkRankModularity.R")
@@ -81,7 +80,6 @@ metric.names <- c("richness",
                   "connectance",
                   "intra_inter_ratio",
                   "degree_distribution",
-                  # "kurtosis",
                   "skewness",
                   "modularity",
                   "complexity")
