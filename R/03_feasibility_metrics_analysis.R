@@ -168,5 +168,36 @@ metrics.plot <- cp + ddp
 #        width = 8,height = 4,dpi = 300)
 
 # -------------------------------------------------------------------------
+# 3d plot
+
+library(plotly)
+
+mtcars$am[which(mtcars$am == 0)] <- 'Automatic'
+mtcars$am[which(mtcars$am == 1)] <- 'Manual'
+mtcars$am <- as.factor(mtcars$am)
+
+fig <- plot_ly(mtcars, x = ~wt, y = ~hp, z = ~qsec, color = ~am, colors = c('#BF382A', '#0C4B8E'))
+fig <- fig %>% add_markers()
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Weight'),
+                                   yaxis = list(title = 'Gross horsepower'),
+                                   zaxis = list(title = '1/4 mile time')))
+fig
+
+# remotes::install_github("AckerDWM/gg3D")
+# library(gg3D)
+# 
+# theta.angle <- 100
+# phi.angle <- 30
+# ggplot(my.d3, aes(x=connectance, 
+#                   y=degree_distribution, 
+#                   z=fd.average)) +
+#   axes_3D(theta = theta.angle,phi = phi.angle) +
+#   stat_3D(theta = theta.angle,phi = phi.angle, size = 3) +
+#   labs_3D(theta = theta.angle,phi = phi.angle,
+#     labs=c("connectance", "het. degree dist.", "feasibility domain"),
+#     hjust=c(0,1,1), vjust=c(1, 1, -0.2), angle=c(0, 0, 90)) +
+#   theme_void()
+
+# -------------------------------------------------------------------------
 # are connectance and degree distribution correlated?
 cd.test <- cor.test(my.d3$connectance,my.d3$degree_distribution)

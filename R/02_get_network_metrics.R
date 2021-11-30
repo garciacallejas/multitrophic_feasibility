@@ -151,8 +151,8 @@ for(i.year in 1:length(years)){
 
       # intra/inter ratio -------------------------------------------------------
 
-      my.ratio <- sum(diag(my.matrix))/sum(my.matrix[col(my.matrix) != row(my.matrix)])
-
+      my.ratio <- mean(diag(my.matrix))/mean(my.matrix[col(my.matrix) != row(my.matrix)])
+      
       # connectance -------------------------------------------------------------
       # for now, binary
       
