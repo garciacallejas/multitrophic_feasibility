@@ -17,12 +17,12 @@ source("R/aux_combine_matrices.R")
 vers <- ""
 
 # which type of overlap - if any?
-include.overlap <- TRUE
+# include.overlap <- TRUE
 
 # include phylogenetic overlap?
 # this means in practice that, if included, only taxa from the same order
 # are assumed to compete among them
-taxo.in <- FALSE
+# taxo.in <- FALSE
 
 # compute null matrices? --------------------------------------------------
 # null matrices will be based on reshuffling visits while keeping
@@ -37,7 +37,7 @@ include.null <- TRUE
 replicates <- 100
 
 include.mean.field <- TRUE
-mean.field.value <- .2 # Saavedra et al. 2013
+mean.field.offdiag <- .2 # Saavedra et al. 2013
 mean.field.diag <- 1
 
 # read data ---------------------------------------------------------------
@@ -46,7 +46,7 @@ years <- c(2019,2020)
 plots <- 1:9
 
 plant.phenology <- read.csv2("data/plant_phenology_categories.csv")
-sp.phenology <- read.csv2(file = paste("data/species_phenology_taxonomy",vers,".csv",sep=""),
+animal.phenology <- read.csv2(file = paste("data/species_phenology_taxonomy",vers,".csv",sep=""),
                      stringsAsFactors = FALSE)
 
 animal.info <- read.csv2("data/species_nest_larval_info.csv")
@@ -195,7 +195,7 @@ if(include.mean.field){
                                  include.overlap = FALSE,
                                  randomize = FALSE,
                                  mean.field.intraguild = TRUE,
-                                 mean.field.offdiag = mean.field.value,
+                                 mean.field.offdiag = mean.field.offdiag,
                                  mean.field.diag = mean.field.diag)
     
   # store block matrix ------------------------------------------------------
