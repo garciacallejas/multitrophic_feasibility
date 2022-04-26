@@ -130,10 +130,11 @@ cm <- aux_combine_matrices(pp.all.years = pp.all.years,
                            ph.all.years = ph.all.years,
                            pfv.all.years = pfv.all.years,
                            plant.phenology = plant.phenology,
-                           sp.data = sp.data,
-                           taxo.in = taxo.in,
-                           include.overlap = TRUE,
-                           randomize = FALSE) 
+                           animal.phenology = animal.phenology,
+                           animal.nesting.info = animal.nesting.info,
+                           animal.larval.info = animal.larval.info,
+                           randomize = FALSE,
+                           intraguild.type = "phenology")
 
 # store block matrix ------------------------------------------------------
 
