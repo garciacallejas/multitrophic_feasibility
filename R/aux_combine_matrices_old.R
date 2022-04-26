@@ -1,59 +1,15 @@
 
-#' combine interaction matrices in a single block matrix
-#' 
-#' In the process, generate intraguild matrices for herbivore and pollinator guilds.
-#' This needs additional info: phenology, nesting, and larval food requirements.
-#' Note that plant phenology and animal phenology is in different formats. 
-#' 
-#' Plant phenology is divided in three categories: 
-#' early, middle, late. 
-#' 
-#' Animal phenology is given by four columns per sp: 
-#' min.month, min.day, max.month, max.day. 
-#' These identify the activity period of each sp each year.
-#' 
-#' Nesting information is given in categories, one category per taxon;
-#' larval feeding information likewise. Taxa in the same category are assumed
-#' to compete.
-#' 
-#' If randomize, inter-guild links are reshuffled keeping row and column totals 
-#' fixed.
-#' 
-#' If mean field, intraguild matrices are mean field matrices, with values given
-#' by mean.field.offdiag and mean.field.diag
-#'
-#' @param pp.all.years nested list, by year and plot, with number of spatial associations among plant sp
-#' @param ph.all.years nested list, by year and plot, with number of visits of herbivores (columns) to plants (rows)
-#' @param pfv.all.years nested list, by year and plot, with number of visits of floral visitors (columns) to plants (rows)
-#' @param plant.phenology dataframe with two columns. ID and pheno.cat, giving the phenology category of each plant: early, middle, late
-#' @param animal.phenology dataframe with ate least six columns: ID, year, min.month, min.day, max.month, max.day
-#' @param animal.nesting.info dataframe with two columns: ID and nesting (categorical)
-#' @param animal.larval.info dataframe with two columns: ID and larval.food.requirements (categorical)
-#' @param randomize TRUE or FALSE
-#' @param intraguild.type factor: mean.field, phenology, phenology_nesting, phenology_larvae, phenology_nesting_larvae
-#' @param mean.field.offdiag numeric
-#' @param mean.field.diag numeric
-#'
-#' @return nested list, by year and plot, with each element being a block matrix for the full community
-#' @export
-#'
-#' @examples
 aux_combine_matrices <- function(pp.all.years,
-                                 ph.all.years,
-                                 pfv.all.years,
-                                 plant.phenology = NULL,
-                                 animal.phenology,
-                                 animal.nesting.info,
-                                 animal.larval.info,
-                                 # taxo.in,
-                                 # include.overlap = TRUE,
-                                 randomize = FALSE,
-                                 intraguild.type = c("mean.field","phenology",
-                                                     "phenology_nesting",
-                                                     "phenology_larvae",
-                                                     "phenology_nesting_larvae"),
-                                 mean.field.offdiag = NULL,
-                                 mean.field.diag = NULL){
+                             ph.all.years,
+                             pfv.all.years,
+                             plant.phenology = NULL,
+                             sp.data,
+                             taxo.in,
+                             include.overlap = TRUE,
+                             randomize = FALSE,
+                             mean.field.intraguild = FALSE,
+                             mean.field.offdiag = NULL,
+                             mean.field.diag = NULL){
   
   years <- names(pp.all.years)
   plots <- 1:length(pp.all.years[[1]])
@@ -185,60 +141,8 @@ aux_combine_matrices <- function(pp.all.years,
   }# for i.year
   
   # -------------------------------------------------------------------------
-  # generate intraguild matrices before standardizing
+  # apply overlap masks before standardizing
   # so that, when standardizing, mathematical properties hold (e.g. all elements sum 1)
-  
-  if(intraguild.type == "mean.field"){
-    
-      for(i.year in 1:length(years)){
-        for(i.plot in 1:length(plots)){
-          
-          # plants
-          pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
-            ncol(pp.all.years[[i.year]][[i.plot]])
-          
-          pp.all.years[[i.year]][[i.plot]] <- 
-            # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
-            matrix(data = rep(mean.field.offdiag,pp.num),
-                   nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-                   dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
-                                   colnames(pp.all.years[[i.year]][[i.plot]])))
-          
-          diag(pp.all.years[[i.year]][[i.plot]]) <- mean.field.diag
-          
-          # floral visitors and herbivores
-          plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
-          plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
-          
-          fv.all.years[[i.year]][[i.plot]] <- 
-            matrix(data = rep(mean.field.offdiag,length(plot.fv.names)^2),
-                   nrow = length(plot.fv.names),
-                   dimnames = list(plot.fv.names,plot.fv.names))
-          
-          diag(fv.all.years[[i.year]][[i.plot]]) <- mean.field.diag
-          
-          h.all.years[[i.year]][[i.plot]] <-
-            matrix(data = rep(mean.field.offdiag,length(plot.h.names)^2),
-                   nrow = length(plot.h.names),
-                   dimnames = list(plot.h.names,plot.h.names))
-          
-          diag(h.all.years[[i.year]][[i.plot]]) <- mean.field.diag
-          
-        }# for i.plot
-      }# for i.year
-    
-  }else if(intraguild.type == "phenology"){
-    
-  }else if(intraguid.type == "phenology_nesting"){
-    
-  }else if(intraguild.type == "phenology_larvae"){
-    
-  }else if(intraguild.type == "phenology_nesting_larvae"){
-    
-  }else{
-    message("function aux_combine_matrices ERROR: please set a valid intraguild.type")
-    return(NULL)
-  }
   
   if(include.overlap){
     
@@ -384,45 +288,45 @@ aux_combine_matrices <- function(pp.all.years,
 # -------------------------------------------------------------------------
 # impose a mean-field structure to intra-guild matrices?
   
-  # if(mean.field.intraguild){
-  #   for(i.year in 1:length(years)){
-  #     for(i.plot in 1:length(plots)){
-  #       
-  #       # plants
-  #       pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
-  #         ncol(pp.all.years[[i.year]][[i.plot]])
-  #       
-  #       pp.all.years.norm[[i.year]][[i.plot]] <- 
-  #         # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
-  #         matrix(data = rep(mean.field.offdiag,pp.num),
-  #                nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-  #                dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
-  #                                colnames(pp.all.years[[i.year]][[i.plot]])))
-  #       
-  #       diag(pp.all.years.norm[[i.year]][[i.plot]]) <- mean.field.diag
-  #       
-  #       # floral visitors and herbivores
-  #       plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
-  #       plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
-  #       
-  #       fv.all.years.norm[[i.year]][[i.plot]] <- 
-  #             matrix(data = rep(mean.field.offdiag,length(plot.fv.names)^2),
-  #                    nrow = length(plot.fv.names),
-  #                    dimnames = list(plot.fv.names,plot.fv.names))
-  # 
-  #           diag(fv.all.years.norm[[i.year]][[i.plot]]) <- mean.field.diag
-  # 
-  #           h.all.years.norm[[i.year]][[i.plot]] <-
-  #             matrix(data = rep(mean.field.offdiag,length(plot.h.names)^2),
-  #                    nrow = length(plot.h.names),
-  #                    dimnames = list(plot.h.names,plot.h.names))
-  # 
-  #           diag(h.all.years.norm[[i.year]][[i.plot]]) <- mean.field.diag
-  #       
-  #     }
-  #   }
-  #   
-  # }
+  if(mean.field.intraguild){
+    for(i.year in 1:length(years)){
+      for(i.plot in 1:length(plots)){
+        
+        # plants
+        pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
+          ncol(pp.all.years[[i.year]][[i.plot]])
+        
+        pp.all.years.norm[[i.year]][[i.plot]] <- 
+          # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
+          matrix(data = rep(mean.field.offdiag,pp.num),
+                 nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
+                 dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
+                                 colnames(pp.all.years[[i.year]][[i.plot]])))
+        
+        diag(pp.all.years.norm[[i.year]][[i.plot]]) <- mean.field.diag
+        
+        # floral visitors and herbivores
+        plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
+        plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
+        
+        fv.all.years.norm[[i.year]][[i.plot]] <- 
+              matrix(data = rep(mean.field.offdiag,length(plot.fv.names)^2),
+                     nrow = length(plot.fv.names),
+                     dimnames = list(plot.fv.names,plot.fv.names))
+
+            diag(fv.all.years.norm[[i.year]][[i.plot]]) <- mean.field.diag
+
+            h.all.years.norm[[i.year]][[i.plot]] <-
+              matrix(data = rep(mean.field.offdiag,length(plot.h.names)^2),
+                     nrow = length(plot.h.names),
+                     dimnames = list(plot.h.names,plot.h.names))
+
+            diag(h.all.years.norm[[i.year]][[i.plot]]) <- mean.field.diag
+        
+      }
+    }
+    
+  }
   
   # impose signs ------------------------------------------------------------
   

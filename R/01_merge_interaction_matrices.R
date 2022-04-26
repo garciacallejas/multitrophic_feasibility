@@ -1,6 +1,6 @@
 
 # combine plant-plant, plant-floral visitor, plant-herbivore matrices
-# in a block matrix. Also, calculate resource overlap matrices for
+# in a block matrix. Also, calculate intraguild matrices for
 # herbivores and floral visitors
 # 
 # In parallel, store all names of the different species of each guild
@@ -46,8 +46,12 @@ years <- c(2019,2020)
 plots <- 1:9
 
 plant.phenology <- read.csv2("data/plant_phenology_categories.csv")
-sp.data <- read.csv2(file = paste("data/species_phenology_taxonomy",vers,".csv",sep=""),
+sp.phenology <- read.csv2(file = paste("data/species_phenology_taxonomy",vers,".csv",sep=""),
                      stringsAsFactors = FALSE)
+
+animal.info <- read.csv2("data/species_nest_larval_info.csv")
+animal.nesting.info <- animal.info[,c("ID","nesting")]
+animal.larval.info <- animal.info[,c("ID","larval.food.requirements")]
 
 pp.all.years <- list()
 ph.all.years <- list()
