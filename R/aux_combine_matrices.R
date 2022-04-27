@@ -34,7 +34,10 @@
 #' @param mean.field.offdiag numeric
 #' @param mean.field.diag numeric
 #'
-#' @return nested list, by year and plot, with each element being a block matrix for the full community
+#' @return nested list with three levels. In the first level, element 1 is the list of matrices, 
+#' element 2 is the names of the community. In the second level, the list of matrices is nested by year and plot, 
+#' with each element being a block matrix for the full community
+#' 
 #' @export
 #'
 #' @examples
@@ -58,64 +61,12 @@ aux_combine_matrices <- function(pp.all.years,
   years <- names(pp.all.years)
   plots <- 1:length(pp.all.years[[1]])
   
-  # if matrices are randomized, apply the randomization to the raw data
-  if(randomize){
-    pp.all.years.null <- list()
-    ph.all.years.null <- list()
-    pfv.all.years.null <- list()
-    
-    # r2dtable allows generating a number of replicates in a list, 
-    # but doing so one by one I can exactly replicate the code for the
-    # observed matrices. Lazy and prone to errors, but i don't expect
-    # to further modify this code.
-    for(i.year in 1:length(years)){
-      
-      pp.all.years.null[[i.year]] <- list()
-      ph.all.years.null[[i.year]] <- list()
-      pfv.all.years.null[[i.year]] <- list()
-      
-      for(i.plot in plots){
-        pp.all.years.null[[i.year]][[i.plot]] <- 
-          r2dtable(1,rowSums(pp.all.years[[i.year]][[i.plot]]),
-                   colSums(pp.all.years[[i.year]][[i.plot]]))[[1]]
-        
-        colnames(pp.all.years.null[[i.year]][[i.plot]]) <- 
-          colnames(pp.all.years[[i.year]][[i.plot]])
-        rownames(pp.all.years.null[[i.year]][[i.plot]]) <- 
-          rownames(pp.all.years[[i.year]][[i.plot]])
-        
-        ph.all.years.null[[i.year]][[i.plot]] <- 
-          r2dtable(1,rowSums(ph.all.years[[i.year]][[i.plot]]),
-                   colSums(ph.all.years[[i.year]][[i.plot]]))[[1]]
-        
-        colnames(ph.all.years.null[[i.year]][[i.plot]]) <- 
-          colnames(ph.all.years[[i.year]][[i.plot]])
-        rownames(ph.all.years.null[[i.year]][[i.plot]]) <- 
-          rownames(ph.all.years[[i.year]][[i.plot]])
-        
-        pfv.all.years.null[[i.year]][[i.plot]] <- 
-          r2dtable(1,rowSums(pfv.all.years[[i.year]][[i.plot]]),
-                   colSums(pfv.all.years[[i.year]][[i.plot]]))[[1]]
-        
-        colnames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
-          colnames(pfv.all.years[[i.year]][[i.plot]])
-        rownames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
-          rownames(pfv.all.years[[i.year]][[i.plot]])
-      }# for i.plot
-    }# for i.year
-    
-    names(pp.all.years.null) <- years
-    names(ph.all.years.null) <- years
-    names(pfv.all.years.null) <- years
-    
-    # bad practice, but i don't want to change all the rest
-    pp.all.years <- pp.all.years.null
-    ph.all.years <- ph.all.years.null
-    pfv.all.years <- pfv.all.years.null
-  }
-  
   # -------------------------------------------------------------------------
   # convert every intraguild matrix to a square matrix
+  # this is inherited from the previous version, and maintained simply to
+  # obtain the rownames and colnames when building the intraguild matrices
+  # note that I don't use the actual values of these "observed" visit matrices anymore
+  
   # 1 - floral visitors
   fv.all.years <- pfv.all.years
   
@@ -185,8 +136,28 @@ aux_combine_matrices <- function(pp.all.years,
   }# for i.year
   
   # -------------------------------------------------------------------------
-  # generate intraguild matrices before standardizing
-  # so that, when standardizing, mathematical properties hold (e.g. all elements sum 1)
+  # generate intraguild matrices depending on the mechanism
+  
+  # store them in a pre-allocated list
+  p_intraguild <- list()
+  fv_intraguild <- list()
+  h_intraguild <- list()
+  
+  for(i.year in 1:length(years)){
+
+    p_intraguild[[i.year]] <- list()
+    fv_intraguild[[i.year]] <- list()
+    h_intraguild[[i.year]] <- list()
+  
+    for(i.plot in 1:length(plots)){
+      p_intraguild[[i.year]][[i.plot]] <- NA
+      fv_intraguild[[i.year]][[i.plot]] <- NA
+      h_intraguild[[i.year]][[i.plot]] <- NA
+    }
+  }
+  names(p_intraguild) <- years
+  names(fv_intraguild) <- years
+  names(h_intraguild) <- years
   
   if(intraguild.type == "mean.field"){
     
@@ -197,32 +168,32 @@ aux_combine_matrices <- function(pp.all.years,
           pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
             ncol(pp.all.years[[i.year]][[i.plot]])
           
-          pp.all.years[[i.year]][[i.plot]] <- 
+          p_intraguild[[i.year]][[i.plot]] <- 
             # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
             matrix(data = rep(mean.field.offdiag,pp.num),
                    nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
                    dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
                                    colnames(pp.all.years[[i.year]][[i.plot]])))
           
-          diag(pp.all.years[[i.year]][[i.plot]]) <- mean.field.diag
+          diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
           
           # floral visitors and herbivores
           plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
           plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
           
-          fv.all.years[[i.year]][[i.plot]] <- 
+          fv_intraguild[[i.year]][[i.plot]] <- 
             matrix(data = rep(mean.field.offdiag,length(plot.fv.names)^2),
                    nrow = length(plot.fv.names),
                    dimnames = list(plot.fv.names,plot.fv.names))
           
-          diag(fv.all.years[[i.year]][[i.plot]]) <- mean.field.diag
+          diag(fv_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
           
-          h.all.years[[i.year]][[i.plot]] <-
+          h_intraguild[[i.year]][[i.plot]] <-
             matrix(data = rep(mean.field.offdiag,length(plot.h.names)^2),
                    nrow = length(plot.h.names),
                    dimnames = list(plot.h.names,plot.h.names))
           
-          diag(h.all.years[[i.year]][[i.plot]]) <- mean.field.diag
+          diag(h_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
           
         }# for i.plot
       }# for i.year
@@ -232,16 +203,13 @@ aux_combine_matrices <- function(pp.all.years,
     # the overlap is slightly different for plants and for animal communities
     # plants have three phenological modes, see "plant.phenology"
     # so that sp in same category have overlap 1, adjacent 0.5, and other 0
-    p_overlap <- list()
-    
+
     # the phenological overlap is constant across years for plants
     # i.e. early, middle, and late species are conserved in different years
     
     # competition is given, for plants, by spatial associations weighted
     # by the phenological overlap
     for(i.year in 1:length(years)){
-      
-      p_overlap[[i.year]] <- list()
       
       for(i.plot in 1:length(plots)){
         my.plants <- sort(unique(row.names(pp.all.years[[i.year]][[i.plot]])))
@@ -269,16 +237,10 @@ aux_combine_matrices <- function(pp.all.years,
         }# for i
         
         # weight the plant observations by phenological overlap
-        p_overlap[[i.year]][[i.plot]] <- pp.all.years[[i.year]][[i.plot]] * p.overlap.matrix
+        p_intraguild[[i.year]][[i.plot]] <- pp.all.years[[i.year]][[i.plot]] * p.overlap.matrix
         
       }# for i.plot
     }# for i.year
-    
-    names(p_overlap) <- years
-    
-    # now, animals
-    fv_overlap <- list()
-    h_overlap <- list()
     
     pheno.matrix <- list()
 
@@ -290,10 +252,7 @@ aux_combine_matrices <- function(pp.all.years,
     # here, apply the phenology mask to each pollinator and each herbivore community
     # thus, the competition coefficient is *only* the phenological overlap
     for(i.year in 1:length(years)){
-      
-      fv_overlap[[i.year]] <- list()
-      h_overlap[[i.year]] <- list()
-      
+
       for(i.plot in 1:length(plots)){
         
         plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
@@ -302,18 +261,15 @@ aux_combine_matrices <- function(pp.all.years,
         fv.plot.mask <- pheno.matrix[[i.year]][plot.fv.names,plot.fv.names]
         h.plot.mask <- pheno.matrix[[i.year]][plot.h.names,plot.h.names]
         
-        fv_overlap[[i.year]][[i.plot]] <- fv.plot.mask
-        h_overlap[[i.year]][[i.plot]] <- h.plot.mask
+        fv_intraguild[[i.year]][[i.plot]] <- fv.plot.mask
+        h_intraguild[[i.year]][[i.plot]] <- h.plot.mask
         
       }# for i.plot
     }# for i.year
     
-    names(fv_overlap) <- years
-    names(h_overlap) <- years
-    
     if(intraguild.type == "phenology"){
       # nothing else to do
-    }else if(intraguid.type == "phenology_nesting"){
+    }else if(intraguild.type == "phenology_nesting"){
       
       # update fv_overlap and h_overlap:
       
@@ -370,8 +326,8 @@ aux_combine_matrices <- function(pp.all.years,
           
           # weight the observations by phenological overlap
           
-          fv_overlap[[i.year]][[i.plot]] <- fv_overlap[[i.year]][[i.plot]] * fv.nest.overlap.matrix
-          h_overlap[[i.year]][[i.plot]] <- h_overlap[[i.year]][[i.plot]] * h.nest.overlap.matrix
+          fv_intraguild[[i.year]][[i.plot]] <- fv_intraguild[[i.year]][[i.plot]] * fv.nest.overlap.matrix
+          h_intraguild[[i.year]][[i.plot]] <- h_intraguild[[i.year]][[i.plot]] * h.nest.overlap.matrix
           
         }# for i.plot
       }# for i.year
@@ -430,11 +386,10 @@ aux_combine_matrices <- function(pp.all.years,
             }# for j
           }# for i
           
-          
           # weight the observations by phenological overlap
           
-          fv_overlap[[i.year]][[i.plot]] <- fv_overlap[[i.year]][[i.plot]] * fv.larval.overlap.matrix
-          h_overlap[[i.year]][[i.plot]] <- h_overlap[[i.year]][[i.plot]] * h.larval.overlap.matrix
+          fv_intraguild[[i.year]][[i.plot]] <- fv_intraguild[[i.year]][[i.plot]] * fv.larval.overlap.matrix
+          h_intraguild[[i.year]][[i.plot]] <- h_intraguild[[i.year]][[i.plot]] * h.larval.overlap.matrix
           
         }# for i.plot
       }# for i.year
@@ -541,8 +496,8 @@ aux_combine_matrices <- function(pp.all.years,
           
           # weight the observations by nesting and larval overlap
           
-          fv_overlap[[i.year]][[i.plot]] <- fv_overlap[[i.year]][[i.plot]] * fv.larval.overlap.matrix * fv.nest.overlap.matrix
-          h_overlap[[i.year]][[i.plot]] <- h_overlap[[i.year]][[i.plot]] * h.larval.overlap.matrix * h.nest.overlap.matrix
+          fv_intraguild[[i.year]][[i.plot]] <- fv_intraguild[[i.year]][[i.plot]] * fv.larval.overlap.matrix * fv.nest.overlap.matrix
+          h_intraguild[[i.year]][[i.plot]] <- h_intraguild[[i.year]][[i.plot]] * h.larval.overlap.matrix * h.nest.overlap.matrix
           
         }# for i.plot
       }# for i.year
@@ -554,6 +509,119 @@ aux_combine_matrices <- function(pp.all.years,
   
   }# if mean.field or not
     
+
+# -------------------------------------------------------------------------
+# round links to three decimal places
+  # this makes no difference in the feasibility domains obtained 
+  # and is necessary for circumventing the swap.web algorithm limitations
+  # of working with integers when randomizing.
+  for(i.year in 1:length(years)){
+    for(i.plot in plots){
+      p_intraguild[[i.year]][[i.plot]] <- round(p_intraguild[[i.year]][[i.plot]],3)
+      fv_intraguild[[i.year]][[i.plot]] <- round(fv_intraguild[[i.year]][[i.plot]],3)
+      h_intraguild[[i.year]][[i.plot]] <- round(h_intraguild[[i.year]][[i.plot]],3)
+      
+      pfv.all.years[[i.year]][[i.plot]] <- round(pfv.all.years[[i.year]][[i.plot]],3)
+      ph.all.years[[i.year]][[i.plot]] <- round(ph.all.years[[i.year]][[i.plot]],3)
+    }
+  }
+
+# -------------------------------------------------------------------------
+  # randomize here, when all square matrices are built.
+  # this can be done here because randomizations of observed interactions 
+  # i.e. plant-herb and plant-fv, do not affect the intraguild matrices
+  # already calculated. For plant-plant interactions, the matrix used 
+  # is p_overlap, and it does not influence other matrices, so I can
+  # randomize it as well.
+
+  # In this version I randomize using bipartite::swap.web, to constrain
+  # both row and col marginals and connectance.
+  # It works only with integers, so I multiply the original matrices by 1e3, 
+  # since they have three decimal places, and then divide again.
+  
+  if(randomize){
+    # pp.all.years.null <- list()
+    p_intraguild.null <- list()
+    fv_intraguild.null <- list()
+    h_intraguild.null <- list()
+    ph.all.years.null <- list()
+    pfv.all.years.null <- list()
+    
+    for(i.year in 1:length(years)){
+      
+      # pp.all.years.null[[i.year]] <- list()
+      p_intraguild.null[[i.year]] <- list()
+      fv_intraguild.null[[i.year]] <- list()
+      h_intraguild.null[[i.year]] <- list()
+      ph.all.years.null[[i.year]] <- list()
+      pfv.all.years.null[[i.year]] <- list()
+      
+      for(i.plot in plots){
+        # intraguild matrices
+        # plants
+        p_intraguild.null[[i.year]][[i.plot]] <- 
+          (bipartite::swap.web(1,(p_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+
+        colnames(p_intraguild.null[[i.year]][[i.plot]]) <- 
+          colnames(p_intraguild[[i.year]][[i.plot]])
+        rownames(p_intraguild.null[[i.year]][[i.plot]]) <- 
+          rownames(p_intraguild[[i.year]][[i.plot]])
+        
+        # floral visitors
+        fv_intraguild.null[[i.year]][[i.plot]] <- 
+          (bipartite::swap.web(1,(fv_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+        
+        colnames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
+          colnames(fv_intraguild[[i.year]][[i.plot]])
+        rownames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
+          rownames(fv_intraguild[[i.year]][[i.plot]])
+        
+        # herbivores
+        h_intraguild.null[[i.year]][[i.plot]] <- 
+          (bipartite::swap.web(1,(h_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+        
+        colnames(h_intraguild.null[[i.year]][[i.plot]]) <- 
+          colnames(h_intraguild[[i.year]][[i.plot]])
+        rownames(h_intraguild.null[[i.year]][[i.plot]]) <- 
+          rownames(h_intraguild[[i.year]][[i.plot]])
+        
+        # interguild matrices
+        # plant-herbivores
+        ph.all.years.null[[i.year]][[i.plot]] <- 
+          (bipartite::swap.web(1,(ph.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+        
+        colnames(ph.all.years.null[[i.year]][[i.plot]]) <- 
+          colnames(ph.all.years[[i.year]][[i.plot]])
+        rownames(ph.all.years.null[[i.year]][[i.plot]]) <- 
+          rownames(ph.all.years[[i.year]][[i.plot]])
+        
+        # plant-floral visitors
+        pfv.all.years.null[[i.year]][[i.plot]] <- 
+          (bipartite::swap.web(1,(pfv.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+        
+        colnames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
+          colnames(pfv.all.years[[i.year]][[i.plot]])
+        rownames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
+          rownames(pfv.all.years[[i.year]][[i.plot]])
+      }# for i.plot
+    }# for i.year
+    
+    # names(pp.all.years.null) <- years
+    names(p_intraguild.null) <- years
+    names(fv_intraguild.null) <- years
+    names(h_intraguild.null) <- years
+    names(ph.all.years.null) <- years
+    names(pfv.all.years.null) <- years
+    
+    # bad practice, but i don't want to change all the rest
+    # pp.all.years <- pp.all.years.null
+    p_intraguild <- p_intraguild.null
+    fv_intraguild <- fv_intraguild.null
+    h_intraguild <- h_intraguild.null
+    ph.all.years <- ph.all.years.null
+    pfv.all.years <- pfv.all.years.null
+  }
+  
   # -------------------------------------------------------------------------
   # now, standardize the intraguild AND interguild matrices
   # there are different options
@@ -565,9 +633,9 @@ aux_combine_matrices <- function(pp.all.years,
   # natural or log values? there is strong variability among them
   # in principle, natural.
   
-  pp.all.years.norm <- p_overlap
-  fv.all.years.norm <- fv_overlap
-  h.all.years.norm <- h_overlap
+  pp.all.years.norm <- p_intraguild
+  fv.all.years.norm <- fv_intraguild
+  h.all.years.norm <- h_intraguild
   pfv.all.years.norm <- pfv.all.years
   ph.all.years.norm <- ph.all.years
   
@@ -575,13 +643,13 @@ aux_combine_matrices <- function(pp.all.years,
     for(i.plot in 1:length(plots)){
       
       # pp.all.years
-      pp.all.years.norm[[i.year]][[i.plot]] <- p_overlap[[i.year]][[i.plot]]/sum(p_overlap[[i.year]][[i.plot]])
+      pp.all.years.norm[[i.year]][[i.plot]] <- p_intraguild[[i.year]][[i.plot]]/sum(p_intraguild[[i.year]][[i.plot]])
       
       # fv.all.years
-      fv.all.years.norm[[i.year]][[i.plot]] <- fv_overlap[[i.year]][[i.plot]]/sum(fv_overlap[[i.year]][[i.plot]])
+      fv.all.years.norm[[i.year]][[i.plot]] <- fv_intraguild[[i.year]][[i.plot]]/sum(fv_intraguild[[i.year]][[i.plot]])
       
       # h.all.years
-      h.all.years.norm[[i.year]][[i.plot]] <- h_overlap[[i.year]][[i.plot]]/sum(h_overlap[[i.year]][[i.plot]])
+      h.all.years.norm[[i.year]][[i.plot]] <- h_intraguild[[i.year]][[i.plot]]/sum(h_intraguild[[i.year]][[i.plot]])
       
       # pfv.all.years
       pfv.all.years.norm[[i.year]][[i.plot]] <- pfv.all.years[[i.year]][[i.plot]]/sum(pfv.all.years[[i.year]][[i.plot]])
