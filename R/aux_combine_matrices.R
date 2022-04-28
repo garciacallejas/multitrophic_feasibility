@@ -295,8 +295,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[i.fv]]
               jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[j.fv]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
@@ -312,8 +316,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[i.h]]
               jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[j.h]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
@@ -358,8 +366,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[i.fv]]
               jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[j.fv]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
@@ -375,8 +387,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[i.h]]
               jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[j.h]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
@@ -420,8 +436,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[i.fv]]
               jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[j.fv]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
@@ -437,8 +457,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[i.h]]
               jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[j.h]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
@@ -465,8 +489,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[i.fv]]
               jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[j.fv]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
@@ -482,8 +510,12 @@ aux_combine_matrices <- function(pp.all.years,
               icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[i.h]]
               jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[j.h]]
               
-              if(icat == jcat){
-                my.overlap <- 1
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- 1
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }

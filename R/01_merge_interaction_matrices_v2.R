@@ -138,7 +138,7 @@ for(i.type in 1:length(intraguild.types)){
                                              pfv.all.years = pfv.all.years,
                                              plant.phenology = plant.phenology,
                                              animal.phenology = animal.phenology,
-                                             animal.nesting.info = anlimal.nesting.info,
+                                             animal.nesting.info = animal.nesting.info,
                                              animal.larval.info = animal.larval.info,
                                              randomize = FALSE,
                                              intraguild.type = intraguild.types[i.type],
