@@ -78,18 +78,19 @@ aux_combine_matrices <- function(pp.all.years,
     if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
     
     # if it does not work, start over again
-    while(sum(is.na(res))>0){
-      if(verbose) print("swap.web restarted")
+    counter <- 0
+    while(sum(is.na(res))>0 & counter < 10){
+      if(verbose) print(paste("swap.web restarted for the ",counter, " time",sep=""))
       res <- tryCatch(
         {
           R.utils::withTimeout(bipartite::swap.web(1,(A*1e3)), timeout = time.limit)                    
         }
         ,TimeoutException = function(ex) NA
       )
+      counter <- counter + 1
       # trycatch returns a list, check if error and return the matrix
       if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
     }
-    
     return <- res
   }
   # -------------------------------------------------------------------------
@@ -616,6 +617,9 @@ aux_combine_matrices <- function(pp.all.years,
     ph.all.years.null <- list()
     pfv.all.years.null <- list()
     
+    # Flag to check whether randomization is successful
+    na.matrices <- FALSE
+    
     for(i.year in 1:length(years)){
       
       # pp.all.years.null[[i.year]] <- list()
@@ -635,32 +639,44 @@ aux_combine_matrices <- function(pp.all.years,
         # plants
         p_intraguild.null[[i.year]][[i.plot]] <- 
           # (bipartite::swap.web(1,(p_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
-        swap.fun(p_intraguild[[i.year]][[i.plot]],time.limit)
-
-        colnames(p_intraguild.null[[i.year]][[i.plot]]) <- 
-          colnames(p_intraguild[[i.year]][[i.plot]])
-        rownames(p_intraguild.null[[i.year]][[i.plot]]) <- 
-          rownames(p_intraguild[[i.year]][[i.plot]])
+          swap.fun(p_intraguild[[i.year]][[i.plot]],time.limit)
         
+        if(all(!is.na(p_intraguild.null[[i.year]][[i.plot]]))){
+          colnames(p_intraguild.null[[i.year]][[i.plot]]) <- 
+            colnames(p_intraguild[[i.year]][[i.plot]])
+          rownames(p_intraguild.null[[i.year]][[i.plot]]) <- 
+            rownames(p_intraguild[[i.year]][[i.plot]])
+        }else{
+          na.matrices <- TRUE
+        }
         # floral visitors
         fv_intraguild.null[[i.year]][[i.plot]] <- 
           # (bipartite::swap.web(1,(fv_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
           swap.fun(fv_intraguild[[i.year]][[i.plot]],time.limit)
         
-        colnames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
-          colnames(fv_intraguild[[i.year]][[i.plot]])
-        rownames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
-          rownames(fv_intraguild[[i.year]][[i.plot]])
+        if(all(!is.na(fv_intraguild.null[[i.year]][[i.plot]]))){
+          colnames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
+            colnames(fv_intraguild[[i.year]][[i.plot]])
+          rownames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
+            rownames(fv_intraguild[[i.year]][[i.plot]])
+        }else{
+          na.matrices <- TRUE
+          print(paste("INTRAGUILD FV year ",i.year,", plot ",i.plot," FAILED",sep=""))
+        }
         
         # herbivores
         h_intraguild.null[[i.year]][[i.plot]] <- 
           # (bipartite::swap.web(1,(h_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
           swap.fun(h_intraguild[[i.year]][[i.plot]],time.limit)
         
-        colnames(h_intraguild.null[[i.year]][[i.plot]]) <- 
-          colnames(h_intraguild[[i.year]][[i.plot]])
-        rownames(h_intraguild.null[[i.year]][[i.plot]]) <- 
-          rownames(h_intraguild[[i.year]][[i.plot]])
+        if(all(!is.na(h_intraguild.null[[i.year]][[i.plot]]))){
+          colnames(h_intraguild.null[[i.year]][[i.plot]]) <- 
+            colnames(h_intraguild[[i.year]][[i.plot]])
+          rownames(h_intraguild.null[[i.year]][[i.plot]]) <- 
+            rownames(h_intraguild[[i.year]][[i.plot]])
+        }else{
+          na.matrices <- TRUE
+        }
         
         # interguild matrices
         # plant-herbivores
@@ -668,20 +684,28 @@ aux_combine_matrices <- function(pp.all.years,
           # (bipartite::swap.web(1,(ph.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
           swap.fun(ph.all.years[[i.year]][[i.plot]],time.limit)
         
-        colnames(ph.all.years.null[[i.year]][[i.plot]]) <- 
-          colnames(ph.all.years[[i.year]][[i.plot]])
-        rownames(ph.all.years.null[[i.year]][[i.plot]]) <- 
-          rownames(ph.all.years[[i.year]][[i.plot]])
+        if(all(!is.na(ph.all.years.null[[i.year]][[i.plot]]))){
+          colnames(ph.all.years.null[[i.year]][[i.plot]]) <- 
+            colnames(ph.all.years[[i.year]][[i.plot]])
+          rownames(ph.all.years.null[[i.year]][[i.plot]]) <- 
+            rownames(ph.all.years[[i.year]][[i.plot]])
+        }else{
+          na.matrices <- TRUE
+        }
         
         # plant-floral visitors
         pfv.all.years.null[[i.year]][[i.plot]] <- 
           # (bipartite::swap.web(1,(pfv.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
           swap.fun(pfv.all.years[[i.year]][[i.plot]],time.limit)
         
-        colnames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
-          colnames(pfv.all.years[[i.year]][[i.plot]])
-        rownames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
-          rownames(pfv.all.years[[i.year]][[i.plot]])
+        if(all(!is.na(pfv.all.years.null[[i.year]][[i.plot]]))){
+          colnames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
+            colnames(pfv.all.years[[i.year]][[i.plot]])
+          rownames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
+            rownames(pfv.all.years[[i.year]][[i.plot]])
+        }else{
+          na.matrices <- TRUE
+        }
       }# for i.plot
     }# for i.year
     
@@ -699,6 +723,13 @@ aux_combine_matrices <- function(pp.all.years,
     h_intraguild <- h_intraguild.null
     ph.all.years <- ph.all.years.null
     pfv.all.years <- pfv.all.years.null
+    
+    # if the swap.web function failed, return NULL
+    if(na.matrices){
+      message("function aux_combine_matrices: randomization process failed, returning NULL")
+      return(NULL)
+    }
+    
   }
   
   # -------------------------------------------------------------------------

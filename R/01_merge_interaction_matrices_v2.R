@@ -33,7 +33,7 @@ mean.field.diag <- 1
 # null matrices are obtained for each intraguild matrix type
 
 include.null <- TRUE
-replicates <- 10
+replicates <- 5
 
 # read data ---------------------------------------------------------------
 
@@ -132,7 +132,7 @@ for(i.type in 1:length(intraguild.types)){
   
   # -------------------------------------------------------------------------
   # obtain "observed" matrix of i.type
-  
+  cat(i.type," started\n",sep="")
   my.observed.matrix <- aux_combine_matrices(pp.all.years = pp.all.years,
                                              ph.all.years = ph.all.years,
                                              pfv.all.years = pfv.all.years,
@@ -175,10 +175,21 @@ for(i.type in 1:length(intraguild.types)){
                                              verbose = TRUE)
       
       # add to the list
-      community_matrices[[i.type]][[2]][[i.rep]] <- my.null.matrix[[1]]
+      if(any(is.null(my.null.matrix))){
+        
+        # TYPE 4 FAILS, FOR INTRAGUILD FLORAL VISITORS - YEAR 2, PLOTS 7 AND 9
+        
+        community_matrices[[i.type]][[2]][[i.rep]] <- NULL
+        cat("********* ",i.type," - rep ",i.rep, " - FAILED ********\n",sep="")
+      }else{
+        community_matrices[[i.type]][[2]][[i.rep]] <- my.null.matrix[[1]]
+        cat(i.type," - rep ",i.rep, " - ok\n",sep="")
+      }
       
     }# for i.rep
     
+    # keep non-null elements
+    community_matrices[[i.type]][[2]] <- purrr::compact(community_matrices[[i.type]][[2]])
     names(community_matrices[[i.type]]) <- c("observed","null.replicates")
     
   }# if include.null
