@@ -33,7 +33,7 @@ mean.field.diag <- 1
 # null matrices are obtained for each intraguild matrix type
 
 include.null <- TRUE
-replicates <- 100
+replicates <- 10
 
 # read data ---------------------------------------------------------------
 
@@ -162,16 +162,17 @@ for(i.type in 1:length(intraguild.types)){
       
       # obtain null block matrix of i.type
       my.null.matrix <- aux_combine_matrices(pp.all.years = pp.all.years,
-                                                 ph.all.years = ph.all.years,
-                                                 pfv.all.years = pfv.all.years,
-                                                 plant.phenology = plant.phenology,
-                                                 animal.phenology = animal.phenology,
-                                                 animal.nesting.info = animal.nesting.info,
-                                                 animal.larval.info = animal.larval.info,
-                                                 randomize = TRUE,
-                                                 intraguild.type = intraguild.types[i.type],
-                                                 mean.field.offdiag = mean.field.offdiag,
-                                                 mean.field.diag = mean.field.diag)
+                                             ph.all.years = ph.all.years,
+                                             pfv.all.years = pfv.all.years,
+                                             plant.phenology = plant.phenology,
+                                             animal.phenology = animal.phenology,
+                                             animal.nesting.info = animal.nesting.info,
+                                             animal.larval.info = animal.larval.info,
+                                             randomize = TRUE,
+                                             intraguild.type = intraguild.types[i.type],
+                                             mean.field.offdiag = mean.field.offdiag,
+                                             mean.field.diag = mean.field.diag,
+                                             verbose = TRUE)
       
       # add to the list
       community_matrices[[i.type]][[2]][[i.rep]] <- my.null.matrix[[1]]

@@ -30,6 +30,8 @@
 #' @param animal.nesting.info dataframe with two columns: ID and nesting (categorical)
 #' @param animal.larval.info dataframe with two columns: ID and larval.food.requirements (categorical)
 #' @param randomize TRUE or FALSE
+#' @param time.limit time limit in seconds for running bipartite::swap.web, which is the underlying randomization function.
+#' this is set because that function can get stuck. If it runs above the limit, it starts again.
 #' @param intraguild.type factor: mean.field, phenology, phenology_nesting, phenology_larvae, phenology_nesting_larvae
 #' @param mean.field.offdiag numeric
 #' @param mean.field.diag numeric
@@ -51,13 +53,48 @@ aux_combine_matrices <- function(pp.all.years,
                                  # taxo.in,
                                  # include.overlap = TRUE,
                                  randomize = FALSE,
+                                 time.limit = 10,
                                  intraguild.type = c("mean.field","phenology",
                                                      "phenology_nesting",
                                                      "phenology_larvae",
                                                      "phenology_nesting_larvae"),
                                  mean.field.offdiag = NULL,
-                                 mean.field.diag = NULL){
+                                 mean.field.diag = NULL,
+                                 verbose = FALSE){
   
+
+  # -------------------------------------------------------------------------
+  # auxiliary function for randomizing matrices while preventing it from
+  # getting stuck
+  swap.fun <- function(A,time.limit){
+    
+    res <- tryCatch(
+      {
+        R.utils::withTimeout(bipartite::swap.web(1,(A*1e3)), timeout = time.limit)                    
+      }
+      ,TimeoutException = function(ex) NA
+    )
+    # trycatch returns a list, check if error and return the matrix
+    if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
+    
+    # if it does not work, start over again
+    while(sum(is.na(res))>0){
+      if(verbose) print("swap.web restarted")
+      res <- tryCatch(
+        {
+          R.utils::withTimeout(bipartite::swap.web(1,(A*1e3)), timeout = time.limit)                    
+        }
+        ,TimeoutException = function(ex) NA
+      )
+      # trycatch returns a list, check if error and return the matrix
+      if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
+    }
+    
+    return <- res
+  }
+  # -------------------------------------------------------------------------
+  
+  # constants
   years <- names(pp.all.years)
   plots <- 1:length(pp.all.years[[1]])
   
@@ -589,10 +626,16 @@ aux_combine_matrices <- function(pp.all.years,
       pfv.all.years.null[[i.year]] <- list()
       
       for(i.plot in plots){
+        
+        if(verbose){
+          print(paste(i.year,"-",i.plot,"-started",sep=""))
+        }
+        
         # intraguild matrices
         # plants
         p_intraguild.null[[i.year]][[i.plot]] <- 
-          (bipartite::swap.web(1,(p_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          # (bipartite::swap.web(1,(p_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+        swap.fun(p_intraguild[[i.year]][[i.plot]],time.limit)
 
         colnames(p_intraguild.null[[i.year]][[i.plot]]) <- 
           colnames(p_intraguild[[i.year]][[i.plot]])
@@ -601,7 +644,8 @@ aux_combine_matrices <- function(pp.all.years,
         
         # floral visitors
         fv_intraguild.null[[i.year]][[i.plot]] <- 
-          (bipartite::swap.web(1,(fv_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          # (bipartite::swap.web(1,(fv_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          swap.fun(fv_intraguild[[i.year]][[i.plot]],time.limit)
         
         colnames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
           colnames(fv_intraguild[[i.year]][[i.plot]])
@@ -610,7 +654,8 @@ aux_combine_matrices <- function(pp.all.years,
         
         # herbivores
         h_intraguild.null[[i.year]][[i.plot]] <- 
-          (bipartite::swap.web(1,(h_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          # (bipartite::swap.web(1,(h_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          swap.fun(h_intraguild[[i.year]][[i.plot]],time.limit)
         
         colnames(h_intraguild.null[[i.year]][[i.plot]]) <- 
           colnames(h_intraguild[[i.year]][[i.plot]])
@@ -620,7 +665,8 @@ aux_combine_matrices <- function(pp.all.years,
         # interguild matrices
         # plant-herbivores
         ph.all.years.null[[i.year]][[i.plot]] <- 
-          (bipartite::swap.web(1,(ph.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          # (bipartite::swap.web(1,(ph.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          swap.fun(ph.all.years[[i.year]][[i.plot]],time.limit)
         
         colnames(ph.all.years.null[[i.year]][[i.plot]]) <- 
           colnames(ph.all.years[[i.year]][[i.plot]])
@@ -629,7 +675,8 @@ aux_combine_matrices <- function(pp.all.years,
         
         # plant-floral visitors
         pfv.all.years.null[[i.year]][[i.plot]] <- 
-          (bipartite::swap.web(1,(pfv.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          # (bipartite::swap.web(1,(pfv.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
+          swap.fun(pfv.all.years[[i.year]][[i.plot]],time.limit)
         
         colnames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
           colnames(pfv.all.years[[i.year]][[i.plot]])
