@@ -13,13 +13,17 @@ source("R/aux_combine_matrices.R")
 
 # -------------------------------------------------------------------------
 # add a version suffix?
-# vers <- "_v2"
+vers.out <- "_TEMP"
 vers <- ""
 
 # -------------------------------------------------------------------------
 # which intraguild matrix types?
-intraguild.types <- c("mean.field","phenology","phenology_nesting",
-                      "phenology_larvae")
+intraguild.types <- c("mean_field",
+                      "phenology",
+                      "nesting",
+                      "larvae",
+                      "phenology_nesting_larvae"
+                      )
 
 
 # -------------------------------------------------------------------------
@@ -33,7 +37,7 @@ mean.field.diag <- 1
 # null matrices are obtained for each intraguild matrix type
 
 include.null <- TRUE
-replicates <- 5
+replicates <- 3
 
 # read data ---------------------------------------------------------------
 
@@ -41,9 +45,7 @@ years <- c(2019,2020)
 plots <- 1:9
 
 plant.phenology <- read.csv2("data/plant_phenology_categories.csv")
-animal.phenology <- read.csv2(file = paste("data/species_phenology_taxonomy",vers,".csv",sep=""),
-                     stringsAsFactors = FALSE)
-
+animal.phenology <- read.csv2("data/species_phenology_taxonomy.csv")
 animal.info <- read.csv2("data/species_nest_larval_info.csv")
 animal.nesting.info <- animal.info[,c("ID","nesting")]
 animal.larval.info <- animal.info[,c("ID","larval.food.requirements")]
@@ -125,6 +127,7 @@ for(i.year in 1:length(years)){
 # obtain the block matrix associated with each intraguild matrix type
 
 community_matrices <- list()
+community_matrices_null <- list()
 
 for(i.type in 1:length(intraguild.types)){
   
@@ -146,17 +149,19 @@ for(i.type in 1:length(intraguild.types)){
                                              mean.field.diag = mean.field.diag)
 
   # -------------------------------------------------------------------------
-  community_matrices[[i.type]][[1]] <- my.observed.matrix[[1]]
+  community_matrices[[i.type]] <- my.observed.matrix[[1]]
   
   # retrieve the names as well
   # this only needs to be done once, as species composition does not change
   if(i.type == 1){
     sp.names <- my.observed.matrix[[2]]
   }
-  
+
+  # -------------------------------------------------------------------------
+  # obtain null replicates
   if(include.null){
     
-    community_matrices[[i.type]][[2]] <- list()
+    community_matrices_null[[i.type]] <- list()
     
     for(i.rep in 1:replicates){
       
@@ -178,31 +183,33 @@ for(i.type in 1:length(intraguild.types)){
       if(any(is.null(my.null.matrix))){
         
         # TYPE 4 FAILS, FOR INTRAGUILD FLORAL VISITORS - YEAR 2, PLOTS 7 AND 9
+        # and sometimes 1
         
-        community_matrices[[i.type]][[2]][[i.rep]] <- NULL
+        community_matrices_null[[i.type]][[i.rep]] <- NULL
         cat("********* ",i.type," - rep ",i.rep, " - FAILED ********\n",sep="")
       }else{
-        community_matrices[[i.type]][[2]][[i.rep]] <- my.null.matrix[[1]]
+        community_matrices_null[[i.type]][[i.rep]] <- my.null.matrix[[1]]
         cat(i.type," - rep ",i.rep, " - ok\n",sep="")
       }
       
     }# for i.rep
     
     # keep non-null elements
-    community_matrices[[i.type]][[2]] <- purrr::compact(community_matrices[[i.type]][[2]])
-    names(community_matrices[[i.type]]) <- c("observed","null.replicates")
-    
+    community_matrices_null[[i.type]] <- purrr::compact(community_matrices_null[[i.type]])
   }# if include.null
 }# for i.type
 names(community_matrices) <- intraguild.types
+names(community_matrices_null) <- intraguild.types
 
 # -------------------------------------------------------------------------
 
-# save(community_matrices,
-#      file = paste("results/community_matrices",vers,"RData",sep=""))
+save(community_matrices,
+     file = paste("results/community_matrices",vers.out,".RData",sep=""))
+save(community_matrices_null,
+     file = paste("results/community_matrices_null",vers.out,".RData",sep=""))
 
-# save(sp.names,
-#      file = paste("results/community_names",vers,".RData",sep=""))
+save(sp.names,
+     file = paste("results/community_names",vers.out,".RData",sep=""))
 
 
 # -------------------------------------------------------------------------
