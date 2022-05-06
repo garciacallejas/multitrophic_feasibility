@@ -66,7 +66,7 @@ aux_combine_matrices <- function(pp.all.years,
   # -------------------------------------------------------------------------
   # auxiliary function for randomizing matrices while preventing it from
   # getting stuck
-  swap.fun <- function(A,time.limit){
+  swap.fun <- function(A,time.limit, verbose = FALSE){
     
     res <- tryCatch(
       {
@@ -78,6 +78,7 @@ aux_combine_matrices <- function(pp.all.years,
     if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
     
     # if it does not work, start over again
+    # up to #counter times
     counter <- 0
     while(sum(is.na(res))>0 & counter < 5){
       if(verbose) print(paste("swap.web restarted for the ",counter, " time",sep=""))
@@ -756,7 +757,7 @@ aux_combine_matrices <- function(pp.all.years,
             rownames(fv_intraguild[[i.year]][[i.plot]])
         }else{
           na.matrices <- TRUE
-          print(paste("INTRAGUILD FV year ",i.year,", plot ",i.plot," FAILED",sep=""))
+          if(verbose) print(paste("INTRAGUILD FV year ",i.year,", plot ",i.plot," FAILED",sep=""))
         }
         
         # herbivores
