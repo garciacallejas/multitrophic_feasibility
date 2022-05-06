@@ -13,7 +13,7 @@ source("R/aux_combine_matrices.R")
 
 # -------------------------------------------------------------------------
 # add a version suffix?
-vers.out <- "_TEMP"
+vers.out <- ""
 vers <- ""
 
 # -------------------------------------------------------------------------
@@ -37,7 +37,7 @@ mean.field.diag <- 1
 # null matrices are obtained for each intraguild matrix type
 
 include.null <- TRUE
-replicates <- 3
+replicates <- 100
 
 # read data ---------------------------------------------------------------
 
