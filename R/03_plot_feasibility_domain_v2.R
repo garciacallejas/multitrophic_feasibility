@@ -6,49 +6,51 @@ library(colorblindr)
 
 # read data ---------------------------------------------------------------
 # vers <- "_v2"
-vers <- "_TEMP"
+vers <- ""
 
 file.name <- "results/feasibility_domain_observed"
 null.name <- "results/feasibility_domain_null"
-mean.field.name <- "results/feasibility_domain_mean_field"
+# mean.field.name <- "results/feasibility_domain_mean_field"
 
 file.name <- paste(file.name,vers,".csv",sep="")
 null.name <- paste(null.name,vers,".csv",sep="")
-mean.field.name <- paste(mean.field.name,vers,".csv",sep="")
+# mean.field.name <- paste(mean.field.name,vers,".csv",sep="")
 
 fd.observed <- read.csv2(file = file.name,
                          header = TRUE,
                          stringsAsFactors = FALSE)
 
-fd.null <- read.csv2(file = null.name,
-                     header = TRUE,
-                     stringsAsFactors = FALSE)
-
-fd.mf <- read.csv2(file = mean.field.name,
-                     header = TRUE,
-                     stringsAsFactors = FALSE)
+# fd.null <- read.csv2(file = null.name,
+#                      header = TRUE,
+#                      stringsAsFactors = FALSE)
+# 
+# fd.mf <- read.csv2(file = mean.field.name,
+#                      header = TRUE,
+#                      stringsAsFactors = FALSE)
 
 # join data ---------------------------------------------------------------
 
 fd.observed$type <- "observed"
-fd.mf$type <- "mean field"
-
-fd.null.2 <- fd.null %>% group_by(year,plot,guilds) %>%
-  summarise(fd.average.rep = mean(fd.average,na.rm = TRUE),
-            fd.sd.rep = sd(fd.average, na.rm = TRUE))
-fd.null.2$type <- "null"
+# fd.mf$type <- "mean field"
+# 
+# fd.null.2 <- fd.null %>% group_by(year,plot,guilds) %>%
+#   summarise(fd.average.rep = mean(fd.average,na.rm = TRUE),
+#             fd.sd.rep = sd(fd.average, na.rm = TRUE))
+# fd.null.2$type <- "null"
 
 # to avoid errors in repeating names
-names(fd.null.2)[c(4,5)] <- c("fd.average","fd.sd")
+# names(fd.null.2)[c(4,5)] <- c("fd.average","fd.sd")
 
-fd.all <- bind_rows(fd.observed,fd.null.2,fd.mf)
+fd.all <- fd.observed
 
-fd.all$guilds <- factor(fd.all$guilds,levels = c("plants",
+# fd.all <- bind_rows(fd.observed,fd.null.2,fd.mf)
+
+fd.all$guild <- factor(fd.all$guild,levels = c("plants",
                                                  "floral visitors",
                                                  "herbivores",
                                                  "plants-floral visitors",
                                                  "plants-herbivores","all")) 
-fd.all$guilds <- recode(fd.all$guilds, "plants" = "Plants", 
+fd.all$guild <- recode(fd.all$guild, "plants" = "Plants", 
                         "floral visitors" = "Pollinators",
                         "herbivores" = "Herbivores",
                         "plants-floral visitors" = "Plants-Pollinators",
@@ -59,9 +61,8 @@ fd.all$fd.average[which(is.na(fd.all$fd.average))] <- 0
 fd.all$plot <- as.factor(fd.all$plot)
 fd.all$type <- as.factor(fd.all$type)
 
-fd.all$type <- recode(fd.all$type, "null" = "Randomized", "observed" = "Observed",
-                      "mean field" = "Mean field")
-fd.all$type <- factor(fd.all$type,levels = c("Observed","Randomized","Mean field"))
+fd.all$type <- recode(fd.all$type, "null" = "Randomized", "observed" = "Observed")
+fd.all$type <- factor(fd.all$type,levels = c("Observed","Randomized"))
 
 # plot --------------------------------------------------------------------
 
@@ -74,7 +75,7 @@ fd.all.nona <- subset(fd.all,!is.na(fd.average))
 
 fd.means <- fd.all.nona %>% 
   # group_by(guilds, type) %>%
-  group_by(intraguild.type) %>%
+  group_by(intraguild.type, guild) %>%
   summarise(fd.avg = mean(fd.average,na.rm = TRUE),
             fd.sd = sd(fd.average,na.rm = TRUE),
             fd.se = sd(fd.average,na.rm = TRUE)/sqrt(n()))
@@ -99,7 +100,7 @@ p3 <- ggplot(fd.all.nona, aes(y = intraguild.type, x = fd.average)) +
   # geom_boxplot(aes(fill = type),alpha = .6) + 
   scale_fill_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
   scale_color_OkabeIto(darken = 0.2, name = "Interaction\nstructure") +
-  # facet_grid(guilds~.)+
+  facet_grid(guild~.)+
   labs(y = "",x = "Feasibility domain") +
   # xlim(0,0.26) +
   theme_bw()+

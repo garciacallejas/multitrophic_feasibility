@@ -714,7 +714,15 @@ aux_combine_matrices <- function(pp.all.years,
     pfv.all.years.null <- vector(mode = "list", length = length(years))
     
     # Flag to check whether randomization is successful
-    na.matrices <- FALSE
+    na.matrices <- list()
+    
+    for(i.year in 1:length(years)){
+      na.matrices[[i.year]] <- list() 
+      for(i.plot in 1:length(plots)){
+        na.matrices[[i.year]][[i.plot]] <- rep(FALSE,5)
+      }
+    }
+
     
     for(i.year in 1:length(years)){
       
@@ -743,7 +751,7 @@ aux_combine_matrices <- function(pp.all.years,
           rownames(p_intraguild.null[[i.year]][[i.plot]]) <- 
             rownames(p_intraguild[[i.year]][[i.plot]])
         }else{
-          na.matrices <- TRUE
+          na.matrices[[i.year]][[i.plot]][1] <- TRUE
         }
         # floral visitors
         fv_intraguild.null[[i.year]][[i.plot]] <- 
@@ -756,7 +764,7 @@ aux_combine_matrices <- function(pp.all.years,
           rownames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
             rownames(fv_intraguild[[i.year]][[i.plot]])
         }else{
-          na.matrices <- TRUE
+          na.matrices[[i.year]][[i.plot]][2] <- TRUE
           if(verbose) print(paste("INTRAGUILD FV year ",i.year,", plot ",i.plot," FAILED",sep=""))
         }
         
@@ -771,7 +779,7 @@ aux_combine_matrices <- function(pp.all.years,
           rownames(h_intraguild.null[[i.year]][[i.plot]]) <- 
             rownames(h_intraguild[[i.year]][[i.plot]])
         }else{
-          na.matrices <- TRUE
+          na.matrices[[i.year]][[i.plot]][3] <- TRUE
         }
         
         # interguild matrices
@@ -786,7 +794,7 @@ aux_combine_matrices <- function(pp.all.years,
           rownames(ph.all.years.null[[i.year]][[i.plot]]) <- 
             rownames(ph.all.years[[i.year]][[i.plot]])
         }else{
-          na.matrices <- TRUE
+          na.matrices[[i.year]][[i.plot]][4] <- TRUE
         }
         
         # plant-floral visitors
@@ -800,8 +808,9 @@ aux_combine_matrices <- function(pp.all.years,
           rownames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
             rownames(pfv.all.years[[i.year]][[i.plot]])
         }else{
-          na.matrices <- TRUE
+          na.matrices[[i.year]][[i.plot]][5] <- TRUE
         }
+        
       }# for i.plot
     }# for i.year
     
@@ -821,10 +830,10 @@ aux_combine_matrices <- function(pp.all.years,
     pfv.all.years <- pfv.all.years.null
     
     # if the swap.web function failed, return NULL
-    if(na.matrices){
-      message("function aux_combine_matrices: randomization process failed, returning NULL")
-      return(NULL)
-    }
+    # if(any(na.matrices)){
+    #   message("function aux_combine_matrices: randomization process failed, returning NULL")
+    #   # return(NULL)
+    # }
     
   }
   
@@ -902,41 +911,55 @@ aux_combine_matrices <- function(pp.all.years,
       fv.overlap.matrix <- fvfv_sign * fv.all.years.norm[[i.year]][[i.plot]]
       h.overlap.matrix <- hh_sign * h.all.years.norm[[i.year]][[i.plot]]
       
-      # get the set of species for this community
-      valid.names <- get_valid_sp(pp.matrix = pp.matrix,
-                                  ph.matrix = ph.matrix,
-                                  pfv.matrix = pfv.matrix)
+      if(all(is.na(pp.matrix)) | all(is.na(ph.matrix)) | 
+         all(is.na(pfv.matrix)) | 
+         all(is.na(fv.overlap.matrix)) | 
+         all(is.na(h.overlap.matrix))){
+        
+        community_matrices[[i.year]][[i.plot]] <- NA
+      }else{
+        
+        # get the set of species for this community
+        valid.names <- get_valid_sp(pp.matrix = pp.matrix,
+                                    ph.matrix = ph.matrix,
+                                    pfv.matrix = pfv.matrix)
+        
+        # construct the empty matrix
+        block.matrix <- build_block_matrix(plants = valid.names[[1]],
+                                           herbivores = valid.names[[2]],
+                                           floral.visitors = valid.names[[3]])
+        
+        # fill the matrix
+        # Note that in the function "fill_block_matrix" there is an argument
+        # switch_herb_sign that is set to TRUE by default (so not specified here), 
+        # that sets plant effects on herbivores as positive, but not the 
+        # other way around
+        block.matrix.filled <- fill_block_matrix(block.matrix = block.matrix,
+                                                 pp.matrix = pp.matrix,
+                                                 ph.matrix = ph.matrix,
+                                                 pfv.matrix = pfv.matrix,
+                                                 fv.overlap.matrix = fv.overlap.matrix,
+                                                 h.overlap.matrix = h.overlap.matrix)
+        
+        # store the matrix
+        community_matrices[[i.year]][[i.plot]] <- block.matrix.filled
+        
+        # store the valid names of this community
+        plants.year <- unique(c(plants.year,valid.names[[1]]))
+        herbivores.year <- unique(c(herbivores.year,valid.names[[2]]))
+        floral.visitors.year <- unique(c(floral.visitors.year,valid.names[[3]]))
+      }# if-else is.na
       
-      # construct the empty matrix
-      block.matrix <- build_block_matrix(plants = valid.names[[1]],
-                                         herbivores = valid.names[[2]],
-                                         floral.visitors = valid.names[[3]])
-      
-      # fill the matrix
-      # Note that in the function "fill_block_matrix" there is an argument
-      # switch_herb_sign that is set to TRUE by default (so not specified here), 
-      # that sets plant effects on herbivores as positive, but not the 
-      # other way around
-      block.matrix.filled <- fill_block_matrix(block.matrix = block.matrix,
-                                               pp.matrix = pp.matrix,
-                                               ph.matrix = ph.matrix,
-                                               pfv.matrix = pfv.matrix,
-                                               fv.overlap.matrix = fv.overlap.matrix,
-                                               h.overlap.matrix = h.overlap.matrix)
-      
-      # store the matrix
-      community_matrices[[i.year]][[i.plot]] <- block.matrix.filled
-      
-      # store the valid names of this community
-      plants.year <- unique(c(plants.year,valid.names[[1]]))
-      herbivores.year <- unique(c(herbivores.year,valid.names[[2]]))
-      floral.visitors.year <- unique(c(floral.visitors.year,valid.names[[3]]))
-    }
+    }# for i.plot
     
-    sp.names[[i.year]] <- list(plants = sort(plants.year),
-                               herbivores = sort(herbivores.year),
-                               floral.visitors = sort(floral.visitors.year))
-  }
+    if(all(is.na(community_matrices[[i.year]][[i.plot]]))){
+      sp.names[[i.year]] <- NA
+    }else{
+      sp.names[[i.year]] <- list(plants = sort(plants.year),
+                                 herbivores = sort(herbivores.year),
+                                 floral.visitors = sort(floral.visitors.year))
+    }
+  }# for i.year
   
   names(community_matrices) <- years
   names(sp.names) <- years
