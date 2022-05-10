@@ -62,7 +62,7 @@ aux_combine_matrices <- function(pp.all.years,
                                  mean.field.diag = NULL,
                                  verbose = FALSE){
   
-  
+
   # -------------------------------------------------------------------------
   # auxiliary function for randomizing matrices while preventing it from
   # getting stuck
@@ -183,11 +183,11 @@ aux_combine_matrices <- function(pp.all.years,
   h_intraguild <- list()
   
   for(i.year in 1:length(years)){
-    
+
     p_intraguild[[i.year]] <- list()
     fv_intraguild[[i.year]] <- list()
     h_intraguild[[i.year]] <- list()
-    
+  
     for(i.plot in 1:length(plots)){
       p_intraguild[[i.year]][[i.plot]] <- NA
       fv_intraguild[[i.year]][[i.plot]] <- NA
@@ -200,45 +200,45 @@ aux_combine_matrices <- function(pp.all.years,
   
   if(intraguild.type == "mean_field"){
     
-    for(i.year in 1:length(years)){
-      for(i.plot in 1:length(plots)){
-        
-        # plants
-        pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
-          ncol(pp.all.years[[i.year]][[i.plot]])
-        
-        p_intraguild[[i.year]][[i.plot]] <- 
-          # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
-          matrix(data = rep(mean.field.offdiag,pp.num),
-                 nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-                 dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
-                                 colnames(pp.all.years[[i.year]][[i.plot]])))
-        
-        diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
-        
-        # floral visitors and herbivores
-        plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
-        plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
-        
-        fv_intraguild[[i.year]][[i.plot]] <- 
-          matrix(data = rep(mean.field.offdiag,length(plot.fv.names)^2),
-                 nrow = length(plot.fv.names),
-                 dimnames = list(plot.fv.names,plot.fv.names))
-        
-        diag(fv_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
-        
-        h_intraguild[[i.year]][[i.plot]] <-
-          matrix(data = rep(mean.field.offdiag,length(plot.h.names)^2),
-                 nrow = length(plot.h.names),
-                 dimnames = list(plot.h.names,plot.h.names))
-        
-        diag(h_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
-        
-      }# for i.plot
-    }# for i.year
+      for(i.year in 1:length(years)){
+        for(i.plot in 1:length(plots)){
+          
+          # plants
+          pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
+            ncol(pp.all.years[[i.year]][[i.plot]])
+          
+          p_intraguild[[i.year]][[i.plot]] <- 
+            # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
+            matrix(data = rep(mean.field.offdiag,pp.num),
+                   nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
+                   dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
+                                   colnames(pp.all.years[[i.year]][[i.plot]])))
+          
+          diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
+          
+          # floral visitors and herbivores
+          plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
+          plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
+          
+          fv_intraguild[[i.year]][[i.plot]] <- 
+            matrix(data = rep(mean.field.offdiag,length(plot.fv.names)^2),
+                   nrow = length(plot.fv.names),
+                   dimnames = list(plot.fv.names,plot.fv.names))
+          
+          diag(fv_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
+          
+          h_intraguild[[i.year]][[i.plot]] <-
+            matrix(data = rep(mean.field.offdiag,length(plot.h.names)^2),
+                   nrow = length(plot.h.names),
+                   dimnames = list(plot.h.names,plot.h.names))
+          
+          diag(h_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
+          
+        }# for i.plot
+      }# for i.year
     
   }else if(intraguild.type == "phenology"){
-    
+
     # the overlap is slightly different for plants and for animal communities
     # plants have three phenological modes, see "plant.phenology"
     # so that sp in same category have overlap 1, adjacent 0.5, and other 0
@@ -307,513 +307,377 @@ aux_combine_matrices <- function(pp.all.years,
       }# for i.plot
     }# for i.year
     
-  }else if(intraguild.type == "nesting"){
-    
-    # update fv_overlap and h_overlap:
-    # only taxa with same nesting requirements compete
-    # for plants, mean field
-    
-    for(i.year in 1:length(years)){
-      for(i.plot in 1:length(plots)){
-        
-        # plants
-        pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
-          ncol(pp.all.years[[i.year]][[i.plot]])
-        
-        p_intraguild[[i.year]][[i.plot]] <- 
-          # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
-          matrix(data = rep(mean.field.offdiag,pp.num),
-                 nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-                 dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
-                                 colnames(pp.all.years[[i.year]][[i.plot]])))
-        
-        diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
-        
-        # animals
-        my.fv <- sort(unique(row.names(fv.all.years[[i.year]][[i.plot]])))
-        fv.nest.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
-                                         ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
-                                         dimnames = list(my.fv,my.fv))
-        
-        my.h <- sort(unique(row.names(h.all.years[[i.year]][[i.plot]])))
-        h.nest.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
-                                        ncol = ncol(h.all.years[[i.year]][[i.plot]]),
-                                        dimnames = list(my.h,my.h))
-        
-        # fill up nest overlap matrices and apply the mask
-        # floral visitors
-        for(i.fv in 1:nrow(fv.nest.overlap.matrix)){
-          for(j.fv in 1:ncol(fv.nest.overlap.matrix)){
-            icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[i.fv]]
-            jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[j.fv]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            fv.nest.overlap.matrix[i.fv,j.fv] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(fv.nest.overlap.matrix) <- mean.field.diag
-        
-        # herbivores
-        for(i.h in 1:nrow(h.nest.overlap.matrix)){
-          for(j.h in 1:ncol(h.nest.overlap.matrix)){
-            icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[i.h]]
-            jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[j.h]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            h.nest.overlap.matrix[i.h,j.h] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(h.nest.overlap.matrix) <- mean.field.diag
-        
-        # only nesting overlap
-        
-        fv_intraguild[[i.year]][[i.plot]] <- fv.nest.overlap.matrix
-        h_intraguild[[i.year]][[i.plot]] <- h.nest.overlap.matrix
-        
-      }# for i.plot
-    }# for i.year
-    
-  }else if(intraguild.type == "larvae"){
-    
-    # equivalent to nesting
-    
-    for(i.year in 1:length(years)){
-      for(i.plot in 1:length(plots)){
-        
-        # plants
-        pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
-          ncol(pp.all.years[[i.year]][[i.plot]])
-        
-        p_intraguild[[i.year]][[i.plot]] <- 
-          # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
-          matrix(data = rep(mean.field.offdiag,pp.num),
-                 nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-                 dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
-                                 colnames(pp.all.years[[i.year]][[i.plot]])))
-        
-        diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
-        
-        # animals
-        my.fv <- sort(unique(row.names(fv.all.years[[i.year]][[i.plot]])))
-        fv.larval.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
-                                           ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
-                                           dimnames = list(my.fv,my.fv))
-        
-        my.h <- sort(unique(row.names(h.all.years[[i.year]][[i.plot]])))
-        h.larval.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
-                                          ncol = ncol(h.all.years[[i.year]][[i.plot]]),
-                                          dimnames = list(my.h,my.h))
-        
-        # fill up nest overlap matrices and apply the mask
-        # floral visitors
-        for(i.fv in 1:nrow(fv.larval.overlap.matrix)){
-          for(j.fv in 1:ncol(fv.larval.overlap.matrix)){
-            icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[i.fv]]
-            jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[j.fv]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            fv.larval.overlap.matrix[i.fv,j.fv] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(fv.larval.overlap.matrix) <- mean.field.diag
-        
-        # herbivores
-        for(i.h in 1:nrow(h.larval.overlap.matrix)){
-          for(j.h in 1:ncol(h.larval.overlap.matrix)){
-            icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[i.h]]
-            jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[j.h]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            h.larval.overlap.matrix[i.h,j.h] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(h.larval.overlap.matrix) <- mean.field.diag
-        
-        # only larval overlap
-        
-        fv_intraguild[[i.year]][[i.plot]] <- fv.larval.overlap.matrix
-        h_intraguild[[i.year]][[i.plot]] <- h.larval.overlap.matrix
-        
-      }# for i.plot
-    }# for i.year
-    
-  }else if(intraguild.type == "nesting_larvae"){
-    
-    for(i.year in 1:length(years)){
-      for(i.plot in 1:length(plots)){
-        
-        # plants - equivalent to mean field
-        pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
-          ncol(pp.all.years[[i.year]][[i.plot]])
-        
-        p_intraguild[[i.year]][[i.plot]] <- 
-          # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
-          matrix(data = rep(mean.field.offdiag,pp.num),
-                 nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-                 dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
-                                 colnames(pp.all.years[[i.year]][[i.plot]])))
-        
-        diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
-        
-        # nesting and larval competition
-        
-        my.fv <- sort(unique(row.names(fv.all.years[[i.year]][[i.plot]])))
-        fv.larval.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
-                                           ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
-                                           dimnames = list(my.fv,my.fv))
-        
-        my.h <- sort(unique(row.names(h.all.years[[i.year]][[i.plot]])))
-        h.larval.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
-                                          ncol = ncol(h.all.years[[i.year]][[i.plot]]),
-                                          dimnames = list(my.h,my.h))
-        
-        # fill up larval overlap matrices and apply the mask
-        # floral visitors
-        for(i.fv in 1:nrow(fv.larval.overlap.matrix)){
-          for(j.fv in 1:ncol(fv.larval.overlap.matrix)){
-            icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[i.fv]]
-            jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[j.fv]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            fv.larval.overlap.matrix[i.fv,j.fv] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(fv.larval.overlap.matrix) <- mean.field.diag
-        
-        # herbivores
-        for(i.h in 1:nrow(h.larval.overlap.matrix)){
-          for(j.h in 1:ncol(h.larval.overlap.matrix)){
-            icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[i.h]]
-            jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[j.h]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            h.larval.overlap.matrix[i.h,j.h] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(h.larval.overlap.matrix) <- mean.field.diag
-        
-        # nest
-        fv.nest.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
-                                         ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
-                                         dimnames = list(my.fv,my.fv))
-        
-        h.nest.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
-                                        ncol = ncol(h.all.years[[i.year]][[i.plot]]),
-                                        dimnames = list(my.h,my.h))
-        
-        # fill up nest overlap matrices and apply the mask
-        # floral visitors
-        for(i.fv in 1:nrow(fv.nest.overlap.matrix)){
-          for(j.fv in 1:ncol(fv.nest.overlap.matrix)){
-            icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[i.fv]]
-            jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[j.fv]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            fv.nest.overlap.matrix[i.fv,j.fv] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(fv.nest.overlap.matrix) <- mean.field.diag
-        
-        # herbivores
-        for(i.h in 1:nrow(h.nest.overlap.matrix)){
-          for(j.h in 1:ncol(h.nest.overlap.matrix)){
-            icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[i.h]]
-            jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[j.h]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
-              }else{
-                my.overlap <- 0
-              }
-            }else{
-              my.overlap <- 0
-            }
-            
-            h.nest.overlap.matrix[i.h,j.h] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(h.nest.overlap.matrix) <- mean.field.diag
-        
-        # final step: phenology + nesting + larval
-        
-        fv_intraguild[[i.year]][[i.plot]] <- (fv.larval.overlap.matrix + fv.nest.overlap.matrix)/2
-        h_intraguild[[i.year]][[i.plot]] <- (h.larval.overlap.matrix + h.nest.overlap.matrix)/2
-        
-      }# for i.plot
-    }# for i.year
-    
-  }else if(intraguild.type == "nesting_larvae_phenology"){
-    
-    # first obtain phenological overlap, 
-    # then obtain nesting and larval proxies,
-    # lastly combine them: ((nest+larval)/2) * phenology
-    # in this way, phenology modulates the coefficients from nest+larval
-    # for plants, phenology * number of associations
-    for(i.year in 1:length(years)){
-      for(i.plot in 1:length(plots)){
-        my.plants <- sort(unique(row.names(pp.all.years[[i.year]][[i.plot]])))
-        p.overlap.matrix <- matrix(0,nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-                                   ncol = ncol(pp.all.years[[i.year]][[i.plot]]),
-                                   dimnames = list(my.plants,my.plants))
-        
-        # fill up plant overlap matrix
-        for(i.plant in 1:nrow(p.overlap.matrix)){
-          for(j.plant in 1:ncol(p.overlap.matrix)){
-            icat <- plant.phenology$pheno.cat[plant.phenology$ID == rownames(p.overlap.matrix)[i.plant]]
-            jcat <- plant.phenology$pheno.cat[plant.phenology$ID == rownames(p.overlap.matrix)[j.plant]]
-            
-            if(icat == jcat){
-              my.overlap <- 1
-            }else if(icat == "middle" | jcat == "middle"){
-              my.overlap <- 0.5
-            }else{
-              my.overlap <- 0
-            }
-            
-            p.overlap.matrix[i.plant,j.plant] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        # weight the plant observations by phenological overlap
-        p_intraguild[[i.year]][[i.plot]] <- pp.all.years[[i.year]][[i.plot]] * p.overlap.matrix
-        
-      }# for i.plot
-    }# for i.year
-    
-    # animals
-    pheno.matrix <- list()
-    
-    for(i.year in 1:length(years)){
-      my.sp.data <- subset(animal.phenology,!is.na(min.month) & year == years[i.year])
-      pheno.matrix[[i.year]] <- get_phenologic_overlap(sp.data = my.sp.data)
-    }# for i.year
-    
-    for(i.year in 1:length(years)){
+    }else if(intraguild.type == "nesting"){
       
-      for(i.plot in 1:length(plots)){
-        
-        # first, obtain the phenology overlap for each pollinator and each herbivore community
-        # values 0-1, asymmetrical
-        
-        plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
-        plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
-        
-        fv.plot.mask <- pheno.matrix[[i.year]][plot.fv.names,plot.fv.names]
-        h.plot.mask <- pheno.matrix[[i.year]][plot.h.names,plot.h.names]
-        
-        # obtain nesting and larval intraguild proxies
-        # for floral visitors and herbivores
-        
-        my.fv <- sort(unique(row.names(fv.all.years[[i.year]][[i.plot]])))
-        fv.larval.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
+      # update fv_overlap and h_overlap:
+      # only taxa with same nesting requirements compete
+      # for plants, mean field
+      
+      for(i.year in 1:length(years)){
+        for(i.plot in 1:length(plots)){
+          
+          # plants
+          pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
+            ncol(pp.all.years[[i.year]][[i.plot]])
+          
+          p_intraguild[[i.year]][[i.plot]] <- 
+            # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
+            matrix(data = rep(mean.field.offdiag,pp.num),
+                   nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
+                   dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
+                                   colnames(pp.all.years[[i.year]][[i.plot]])))
+          
+          diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
+          
+          # animals
+          my.fv <- sort(unique(row.names(fv.all.years[[i.year]][[i.plot]])))
+          fv.nest.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
+                                     ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
+                                     dimnames = list(my.fv,my.fv))
+          
+          my.h <- sort(unique(row.names(h.all.years[[i.year]][[i.plot]])))
+          h.nest.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
+                                           ncol = ncol(h.all.years[[i.year]][[i.plot]]),
+                                           dimnames = list(my.h,my.h))
+          
+          # fill up nest overlap matrices and apply the mask
+          # floral visitors
+          for(i.fv in 1:nrow(fv.nest.overlap.matrix)){
+            for(j.fv in 1:ncol(fv.nest.overlap.matrix)){
+              icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[i.fv]]
+              jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[j.fv]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
+              }else{
+                my.overlap <- 0
+              }
+              
+              fv.nest.overlap.matrix[i.fv,j.fv] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(fv.nest.overlap.matrix) <- mean.field.diag
+
+          # herbivores
+          for(i.h in 1:nrow(h.nest.overlap.matrix)){
+            for(j.h in 1:ncol(h.nest.overlap.matrix)){
+              icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[i.h]]
+              jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[j.h]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
+              }else{
+                my.overlap <- 0
+              }
+              
+              h.nest.overlap.matrix[i.h,j.h] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(h.nest.overlap.matrix) <- mean.field.diag
+          
+          # only nesting overlap
+          
+          fv_intraguild[[i.year]][[i.plot]] <- fv.nest.overlap.matrix
+          h_intraguild[[i.year]][[i.plot]] <- h.nest.overlap.matrix
+          
+        }# for i.plot
+      }# for i.year
+      
+    }else if(intraguild.type == "larvae"){
+      
+      # equivalent to nesting
+      
+      for(i.year in 1:length(years)){
+        for(i.plot in 1:length(plots)){
+          
+          # plants
+          pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
+            ncol(pp.all.years[[i.year]][[i.plot]])
+          
+          p_intraguild[[i.year]][[i.plot]] <- 
+            # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
+            matrix(data = rep(mean.field.offdiag,pp.num),
+                   nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
+                   dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
+                                   colnames(pp.all.years[[i.year]][[i.plot]])))
+          
+          diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
+          
+          # animals
+          my.fv <- sort(unique(row.names(fv.all.years[[i.year]][[i.plot]])))
+          fv.larval.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
                                            ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
                                            dimnames = list(my.fv,my.fv))
-        
-        my.h <- sort(unique(row.names(h.all.years[[i.year]][[i.plot]])))
-        h.larval.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
+          
+          my.h <- sort(unique(row.names(h.all.years[[i.year]][[i.plot]])))
+          h.larval.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
                                           ncol = ncol(h.all.years[[i.year]][[i.plot]]),
                                           dimnames = list(my.h,my.h))
-        
-        # fill up larval overlap matrices and apply the mask
-        # floral visitors
-        for(i.fv in 1:nrow(fv.larval.overlap.matrix)){
-          for(j.fv in 1:ncol(fv.larval.overlap.matrix)){
-            icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[i.fv]]
-            jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[j.fv]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
+          
+          # fill up nest overlap matrices and apply the mask
+          # floral visitors
+          for(i.fv in 1:nrow(fv.larval.overlap.matrix)){
+            for(j.fv in 1:ncol(fv.larval.overlap.matrix)){
+              icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[i.fv]]
+              jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[j.fv]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
-            }else{
-              my.overlap <- 0
-            }
-            
-            fv.larval.overlap.matrix[i.fv,j.fv] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(fv.larval.overlap.matrix) <- mean.field.diag
-        
-        # herbivores
-        for(i.h in 1:nrow(h.larval.overlap.matrix)){
-          for(j.h in 1:ncol(h.larval.overlap.matrix)){
-            icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[i.h]]
-            jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[j.h]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
+              
+              fv.larval.overlap.matrix[i.fv,j.fv] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(fv.larval.overlap.matrix) <- mean.field.diag
+          
+          # herbivores
+          for(i.h in 1:nrow(h.larval.overlap.matrix)){
+            for(j.h in 1:ncol(h.larval.overlap.matrix)){
+              icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[i.h]]
+              jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[j.h]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
-            }else{
-              my.overlap <- 0
-            }
-            
-            h.larval.overlap.matrix[i.h,j.h] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(h.larval.overlap.matrix) <- mean.field.diag
-        
-        # nest
-        fv.nest.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
-                                         ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
-                                         dimnames = list(my.fv,my.fv))
-        
-        h.nest.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
-                                        ncol = ncol(h.all.years[[i.year]][[i.plot]]),
-                                        dimnames = list(my.h,my.h))
-        
-        # nesting
-        # floral visitors
-        for(i.fv in 1:nrow(fv.nest.overlap.matrix)){
-          for(j.fv in 1:ncol(fv.nest.overlap.matrix)){
-            icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[i.fv]]
-            jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[j.fv]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
+              
+              h.larval.overlap.matrix[i.h,j.h] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(h.larval.overlap.matrix) <- mean.field.diag
+          
+          # only larval overlap
+          
+          fv_intraguild[[i.year]][[i.plot]] <- fv.larval.overlap.matrix
+          h_intraguild[[i.year]][[i.plot]] <- h.larval.overlap.matrix
+          
+        }# for i.plot
+      }# for i.year
+      
+    }else if(intraguild.type == "phenology_nesting_larvae"){
+      
+      # first, calculate phenology overlap in p/fv/h_intraguild
+      # below, update it with the nesting and larval masks
+      
+      for(i.year in 1:length(years)){
+        for(i.plot in 1:length(plots)){
+          my.plants <- sort(unique(row.names(pp.all.years[[i.year]][[i.plot]])))
+          p.overlap.matrix <- matrix(0,nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
+                                     ncol = ncol(pp.all.years[[i.year]][[i.plot]]),
+                                     dimnames = list(my.plants,my.plants))
+          
+          # fill up plant overlap matrix
+          for(i.plant in 1:nrow(p.overlap.matrix)){
+            for(j.plant in 1:ncol(p.overlap.matrix)){
+              icat <- plant.phenology$pheno.cat[plant.phenology$ID == rownames(p.overlap.matrix)[i.plant]]
+              jcat <- plant.phenology$pheno.cat[plant.phenology$ID == rownames(p.overlap.matrix)[j.plant]]
+              
               if(icat == jcat){
-                my.overlap <- mean.field.offdiag
+                my.overlap <- 1
+              }else if(icat == "middle" | jcat == "middle"){
+                my.overlap <- 0.5
               }else{
                 my.overlap <- 0
               }
-            }else{
-              my.overlap <- 0
-            }
-            
-            fv.nest.overlap.matrix[i.fv,j.fv] <- my.overlap
-            
-          }# for j
-        }# for i
+              
+              p.overlap.matrix[i.plant,j.plant] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          # weight the plant observations by phenological overlap
+          p_intraguild[[i.year]][[i.plot]] <- pp.all.years[[i.year]][[i.plot]] * p.overlap.matrix
+          
+        }# for i.plot
+      }# for i.year
+      
+      # animals
+      pheno.matrix <- list()
+      
+      for(i.year in 1:length(years)){
+        my.sp.data <- subset(animal.phenology,!is.na(min.month) & year == years[i.year])
+        pheno.matrix[[i.year]] <- get_phenologic_overlap(sp.data = my.sp.data)
+      }# for i.year
+      
+      # here, apply the phenology mask to each pollinator and each herbivore community
+      for(i.year in 1:length(years)){
         
-        diag(fv.nest.overlap.matrix) <- mean.field.diag
-        
-        # herbivores
-        for(i.h in 1:nrow(h.nest.overlap.matrix)){
-          for(j.h in 1:ncol(h.nest.overlap.matrix)){
-            icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[i.h]]
-            jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[j.h]]
-            
-            if(!is.na(jcat) & !is.na(icat)){
-              if(icat == jcat){
-                my.overlap <- mean.field.offdiag
+        for(i.plot in 1:length(plots)){
+          
+          plot.fv.names <- colnames(fv.all.years[[i.year]][[i.plot]])
+          plot.h.names <- colnames(h.all.years[[i.year]][[i.plot]])
+          
+          fv.plot.mask <- pheno.matrix[[i.year]][plot.fv.names,plot.fv.names]
+          h.plot.mask <- pheno.matrix[[i.year]][plot.h.names,plot.h.names]
+          
+          fv_intraguild[[i.year]][[i.plot]] <- fv.plot.mask
+          h_intraguild[[i.year]][[i.plot]] <- h.plot.mask
+          
+        }# for i.plot
+      }# for i.year
+      
+      # here, update p/fv/h_intraguild
+      # by adding nesting and larval proxies
+      
+      for(i.year in 1:length(years)){
+        for(i.plot in 1:length(plots)){
+          
+          my.fv <- sort(unique(row.names(fv.all.years[[i.year]][[i.plot]])))
+          fv.larval.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
+                                             ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
+                                             dimnames = list(my.fv,my.fv))
+          
+          my.h <- sort(unique(row.names(h.all.years[[i.year]][[i.plot]])))
+          h.larval.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
+                                            ncol = ncol(h.all.years[[i.year]][[i.plot]]),
+                                            dimnames = list(my.h,my.h))
+          
+          # fill up larval overlap matrices and apply the mask
+          # floral visitors
+          for(i.fv in 1:nrow(fv.larval.overlap.matrix)){
+            for(j.fv in 1:ncol(fv.larval.overlap.matrix)){
+              icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[i.fv]]
+              jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(fv.larval.overlap.matrix)[j.fv]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
               }else{
                 my.overlap <- 0
               }
-            }else{
-              my.overlap <- 0
-            }
-            
-            h.nest.overlap.matrix[i.h,j.h] <- my.overlap
-            
-          }# for j
-        }# for i
-        
-        diag(h.nest.overlap.matrix) <- mean.field.diag
-        
-        # final step: phenology modulates the (nesting + larval) matrix
-        
-        fv_intraguild[[i.year]][[i.plot]] <- ((fv.larval.overlap.matrix + fv.nest.overlap.matrix)/2)* fv.plot.mask
-        h_intraguild[[i.year]][[i.plot]] <- ((h.larval.overlap.matrix + h.nest.overlap.matrix)/2)* h.plot.mask
-        
-      }# for i.plot
-    }# for i.year
+              
+              fv.larval.overlap.matrix[i.fv,j.fv] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(fv.larval.overlap.matrix) <- mean.field.diag
+          
+          # herbivores
+          for(i.h in 1:nrow(h.larval.overlap.matrix)){
+            for(j.h in 1:ncol(h.larval.overlap.matrix)){
+              icat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[i.h]]
+              jcat <- animal.larval.info$larval.food.requirements[animal.larval.info$ID == rownames(h.larval.overlap.matrix)[j.h]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
+              }else{
+                my.overlap <- 0
+              }
+              
+              h.larval.overlap.matrix[i.h,j.h] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(h.larval.overlap.matrix) <- mean.field.diag
+          
+          # nest
+          fv.nest.overlap.matrix <- matrix(0,nrow = nrow(fv.all.years[[i.year]][[i.plot]]),
+                                           ncol = ncol(fv.all.years[[i.year]][[i.plot]]),
+                                           dimnames = list(my.fv,my.fv))
+          
+          h.nest.overlap.matrix <- matrix(0,nrow = nrow(h.all.years[[i.year]][[i.plot]]),
+                                          ncol = ncol(h.all.years[[i.year]][[i.plot]]),
+                                          dimnames = list(my.h,my.h))
+          
+          # fill up nest overlap matrices and apply the mask
+          # floral visitors
+          for(i.fv in 1:nrow(fv.nest.overlap.matrix)){
+            for(j.fv in 1:ncol(fv.nest.overlap.matrix)){
+              icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[i.fv]]
+              jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(fv.nest.overlap.matrix)[j.fv]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
+              }else{
+                my.overlap <- 0
+              }
+              
+              fv.nest.overlap.matrix[i.fv,j.fv] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(fv.nest.overlap.matrix) <- mean.field.diag
+          
+          # herbivores
+          for(i.h in 1:nrow(h.nest.overlap.matrix)){
+            for(j.h in 1:ncol(h.nest.overlap.matrix)){
+              icat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[i.h]]
+              jcat <- animal.nesting.info$nesting[animal.nesting.info$ID == rownames(h.nest.overlap.matrix)[j.h]]
+              
+              if(!is.na(jcat) & !is.na(icat)){
+                if(icat == jcat){
+                  my.overlap <- mean.field.offdiag
+                }else{
+                  my.overlap <- 0
+                }
+              }else{
+                my.overlap <- 0
+              }
+              
+              h.nest.overlap.matrix[i.h,j.h] <- my.overlap
+              
+            }# for j
+          }# for i
+          
+          diag(h.nest.overlap.matrix) <- mean.field.diag
+          
+          # final step: phenology + nesting + larval
+          
+          fv_intraguild[[i.year]][[i.plot]] <- fv_intraguild[[i.year]][[i.plot]] + fv.larval.overlap.matrix + fv.nest.overlap.matrix
+          h_intraguild[[i.year]][[i.plot]] <- h_intraguild[[i.year]][[i.plot]] + h.larval.overlap.matrix + h.nest.overlap.matrix
+          
+        }# for i.plot
+      }# for i.year
+      
+    }else{
+      message("function aux_combine_matrices ERROR: please set a valid intraguild.type")
+      return(NULL)
+    }
     
-  }else{
-    message("function aux_combine_matrices ERROR: please set a valid intraguild.type")
-    return(NULL)
-  }
-  
-  
-  # -------------------------------------------------------------------------
-  # round links to three decimal places
+
+# -------------------------------------------------------------------------
+# round links to three decimal places
   # this makes no difference in the feasibility domains obtained 
   # and is necessary for circumventing the swap.web algorithm limitations
   # of working with integers when randomizing.
@@ -827,15 +691,15 @@ aux_combine_matrices <- function(pp.all.years,
       ph.all.years[[i.year]][[i.plot]] <- round(ph.all.years[[i.year]][[i.plot]],3)
     }
   }
-  
-  # -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
   # randomize here, when all square matrices are built.
   # this can be done here because randomizations of observed interactions 
   # i.e. plant-herb and plant-fv, do not affect the intraguild matrices
   # already calculated. For plant-plant interactions, the matrix used 
   # is p_overlap, and it does not influence other matrices, so I can
   # randomize it as well.
-  
+
   # In this version I randomize using bipartite::swap.web, to constrain
   # both row and col marginals and connectance.
   # It works only with integers, so I multiply the original matrices by 1e3, 
@@ -858,7 +722,7 @@ aux_combine_matrices <- function(pp.all.years,
         na.matrices[[i.year]][[i.plot]] <- rep(FALSE,5)
       }
     }
-    
+
     
     for(i.year in 1:length(years)){
       
@@ -1101,6 +965,6 @@ aux_combine_matrices <- function(pp.all.years,
   names(sp.names) <- years
   
   return(list(community_matrices = community_matrices,
-              sp.names = sp.names))
+       sp.names = sp.names))
   
 }

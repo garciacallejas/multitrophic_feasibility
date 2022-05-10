@@ -18,7 +18,7 @@ list.files("R/feasibility_functions/", full.names = TRUE) %>% map(source)
 
 # set number of cores -----------------------------------------------------
 
-workers <- detectCores() - 4
+workers <- 4
 cl <- makeCluster(workers)
 # register the cluster for using foreach
 registerDoParallel(cl)
@@ -39,11 +39,11 @@ file.name <- paste(file.name,vers,".RData",sep="")
 # community_matrices[[intraguild.type]][[year]][[plot]]
 load(paste("results/",file.name,sep=""))
 
-null.name <- "community_matrices_null"
-null.name <- paste(null.name,vers,".RData",sep="")
-
-# for null: community_matrices[[intraguild.type]][[replicate]][[year]][[plot]]
-load(paste("results/",null.name,sep=""))
+# null.name <- "community_matrices_null"
+# null.name <- paste(null.name,vers,".RData",sep="")
+# 
+# # for null: community_matrices[[intraguild.type]][[replicate]][[year]][[plot]]
+# load(paste("results/",null.name,sep=""))
 
 # positions for the blocks are dynamic, species pool is different for 
 # each plot/year
@@ -56,8 +56,8 @@ intraguild.types <- names(community_matrices)
 null.replicates <- length(community_matrices_null[[1]])
 
 # replicates for the feasibility calculations
-omega.replicates <- 100
-bootstrap.replicates <- 100
+omega.replicates <- 10
+bootstrap.replicates <- 10
 
 # number of noise replicates for the feasibility calculation
 # this is for the case in which the original matrix is not invertible
@@ -99,8 +99,10 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                  # intraguild matrix type
                                  if(grepl("mean_field",id.char[i.id])){
                                    my.type <- "mean_field"
-                                 }else if(grepl("phenology_nesting_larvae",id.char[i.id])){
-                                   my.type <- "phenology_nesting_larvae"
+                                 }else if(grepl("nesting_larvae_phenology",id.char[i.id])){
+                                   my.type <- "nesting_larvae_phenology"
+                                 }else if(grepl("nesting_larvae",id.char[i.id])){
+                                   my.type <- "nesting_larvae"
                                  }else if(grepl("phenology",id.char[i.id])){
                                    my.type <- "phenology"
                                  }else if(grepl("nesting",id.char[i.id])){
@@ -191,8 +193,15 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                                                  omega.replicates = omega.replicates,
                                                                  bootstrap.replicates = bootstrap.replicates,
                                                                  noise.replicates = noise.replicates,
-                                                                 noise.threshold = noise.threshold,
+                                                                 noise.threshold = my.noise.threshold,
                                                                  noise.type = noise.type)
+                                 
+                                 # this is a test for checking some features of the matrices
+                                 # omega.df <- data.frame(diag.mean = mean(diag(A)),
+                                 #                        diag.pos = sum(diag(A) > 0),
+                                 #                        diag.dom = mean(diag(A)-rowSums(A)),
+                                 #                        n.zeros = sum(A == 0),
+                                 #                        total.strength = sum(A))
                                  
                                  omega.df$year <- my.year
                                  omega.df$plot <- my.plot
@@ -205,6 +214,7 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                                                           noise.replicates = noise.replicates,
                                                                           noise.threshold = noise.threshold,
                                                                           noise.type = noise.type)
+                                 # sp.exclusions <- data.frame(hey = 1)
                                  
                                  sp.exclusions$year <- my.year
                                  sp.exclusions$plot <- my.plot
@@ -219,18 +229,31 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
 # feasibility.df <- feasibility.metrics[[1]]
 # exclusions.df <- feasibility.metrics[[2]]
 
+# test for displaying some matrix features, 
+# mainly diagonal dominances, diagonal values, 
+# which seem to strongly drive fd
+
+# tt <- feasibility.metrics[[1]] %>%
+#   group_by(guild,intraguild.type) %>%
+#   summarise(mean.zeros = mean(n.zeros),mean.diag = mean(diag.mean),
+#             mean.diag.dom = mean(diag.dom))
+# ggplot(tt, aes(x = intraguild.type, y = mean.diag)) + 
+#   geom_bar(aes(fill = guild),stat = "identity",position=position_dodge()) + 
+#   theme_bw() + 
+#   NULL
+
 # store results -----------------------------------------------------------
-
-fd.name <- "feasibility_domain_observed"
-fd.name <- paste("results/",fd.name,vers,".csv",sep="")
-
-exc.name <- "exclusion_probabilities_observed"
-exc.name <- paste("results/",exc.name,vers,".csv",sep="")
-
-write.csv2(x = feasibility.metrics[[1]],file = fd.name,
-           row.names = FALSE)
-write.csv2(x =  feasibility.metrics[[2]],file = exc.name,
-           row.names = FALSE)
+# 
+# fd.name <- "feasibility_domain_observed"
+# fd.name <- paste("results/",fd.name,vers,".csv",sep="")
+# 
+# exc.name <- "exclusion_probabilities_observed"
+# exc.name <- paste("results/",exc.name,vers,".csv",sep="")
+# 
+# write.csv2(x = feasibility.metrics[[1]],file = fd.name,
+#            row.names = FALSE)
+# write.csv2(x =  feasibility.metrics[[2]],file = exc.name,
+#            row.names = FALSE)
 
 # repeat for null matrices ------------------------------------------------
 if(calculate.null){
@@ -244,6 +267,8 @@ if(calculate.null){
   null.id.char <- paste(null.id[,1],"_",null.id[,2],"_",null.id[,3],"_",null.id[,4],"_",null.id[,5],sep="")
   
   # calculate feasibility metrics  -------------------------------------------
+  
+  # null.id.char <- null.id.char[1:20]
   
   null.feasibility.metrics <- foreach(i.id = 1:length(null.id.char),
                                       # .combine=comb.fun, 
@@ -305,7 +330,7 @@ if(calculate.null){
                                         year.plot.matrix <-
                                           community_matrices_null[[my.type]][[my.rep]][[my.year]][[my.plot]]
                                         
-                                        if(!is.na(year.plot.matrix)){
+                                        if(!any(is.na(year.plot.matrix))){
                                           
                                           plant.positions <- which(rownames(year.plot.matrix) %in%
                                                                      sp.names[[my.year]][["plants"]])

@@ -19,10 +19,8 @@ vers <- ""
 # -------------------------------------------------------------------------
 # which intraguild matrix types?
 intraguild.types <- c("mean_field",
-                      "phenology",
-                      "nesting",
-                      "larvae",
-                      "phenology_nesting_larvae"
+                      "nesting_larvae",
+                      "nesting_larvae_phenology"
                       )
 
 
@@ -36,7 +34,7 @@ mean.field.diag <- 1
 # col and row totals fixed
 # null matrices are obtained for each intraguild matrix type
 
-include.null <- TRUE
+include.null <- FALSE
 replicates <- 100
 
 # read data ---------------------------------------------------------------
@@ -199,14 +197,18 @@ for(i.type in 1:length(intraguild.types)){
   }# if include.null
 }# for i.type
 names(community_matrices) <- intraguild.types
-names(community_matrices_null) <- intraguild.types
-
+if(include.null){
+  names(community_matrices_null) <- intraguild.types
+}
 # -------------------------------------------------------------------------
 
 save(community_matrices,
      file = paste("results/community_matrices",vers.out,".RData",sep=""))
-save(community_matrices_null,
-     file = paste("results/community_matrices_null",vers.out,".RData",sep=""))
+
+if(include.null){
+  save(community_matrices_null,
+       file = paste("results/community_matrices_null",vers.out,".RData",sep=""))
+}
 
 save(sp.names,
      file = paste("results/community_names",vers.out,".RData",sep=""))
