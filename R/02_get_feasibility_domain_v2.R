@@ -3,6 +3,25 @@
 library(tidyverse)
 # devtools::install_github("RadicalCommEcol/MultitrophicFun")
 library(MultitrophicFun)
+library(matlib) # to multiply matrices
+library(nleqslv) # to solve non-linear equations
+library(zipfR) # beta incomplete function to estimate the area of d-dimensional spherical caps 
+library(pracma) # to solve n-dimensional cross products
+library(boot) # to bootstrap
+library(CValternatives) # to estimate PV index
+
+library(foreach)
+library(doParallel)
+
+# source auxiliary functions
+list.files("R/feasibility_functions/", full.names = TRUE) %>% map(source)
+
+# set number of cores -----------------------------------------------------
+
+workers <- detectCores() - 4
+cl <- makeCluster(workers)
+# register the cluster for using foreach
+registerDoParallel(cl)
 
 # -------------------------------------------------------------------------
 # which version do we read?
@@ -10,7 +29,7 @@ library(MultitrophicFun)
 vers <- ""
 
 # calculate the feasibility domain of the null/randomised matrices?
-calculate.null <- TRUE
+calculate.null <- FALSE
 
 # -------------------------------------------------------------------------
 
@@ -36,8 +55,14 @@ intraguild.types <- names(community_matrices)
 # number of null replicates
 null.replicates <- length(community_matrices_null[[1]])
 
-# number of bootstrap replicates for the feasibility calculation
-bootstrap.replicates <- 10#100
+# replicates for the feasibility calculations
+omega.replicates <- 100
+bootstrap.replicates <- 100
+
+# number of noise replicates for the feasibility calculation
+# this is for the case in which the original matrix is not invertible
+# so that I add a small amount of noise to make it so.
+noise.replicates <- 10#100
 noise.type <- "random"
 # how much noise to add relative to the minimum observed values
 # e.g. an order of magnitude of 1% 
@@ -50,95 +75,161 @@ guild.combinations <- c("plants","floral visitors","herbivores",
                         "plants-floral visitors","plants-herbivores",
                         "all")
 
-# if(calculate.obs){
-  
-  # define results ----------------------------------------------------------
+# this is the combined id to loop over in parallel
+id <- expand.grid(intraguild.types,years,plots,guild.combinations)
+id.char <- paste(id[,1],"_",id[,2],"_",id[,3],"_",id[,4],sep="")
 
-fd <- list()
-extinction.probs <- list()
+# calculate feasibility metrics  -------------------------------------------
 
-# calculate feasibility domain  -------------------------------------------
-for(i.type in 1:length(intraguild.types)){
-  for(i.year in 1:length(years)){
-    for(i.plot in plots){
-      
-      year.plot.matrix <- 
-        community_matrices[[i.type]][[as.character(years[i.year])]][[i.plot]]
-      
-      plant.positions <- which(rownames(year.plot.matrix) %in% 
-                                 sp.names[[i.year]][["plants"]])
-      herb.positions <- which(rownames(year.plot.matrix) %in% 
-                                sp.names[[i.year]][["herbivores"]])
-      fv.positions <- which(rownames(year.plot.matrix) %in% 
-                              sp.names[[i.year]][["floral.visitors"]])
-      
-      for(i.guild in 1:length(guild.combinations)){
-        
-        cat(intraguild.types[i.type],"-",years[i.year],"-",i.plot,"-",guild.combinations[i.guild])
-        
-        if(guild.combinations[i.guild] == "plants"){
-          
-          my.matrix <- year.plot.matrix[plant.positions,plant.positions]
-          
-        }else if(guild.combinations[i.guild] == "plants-floral visitors"){
-          
-          my.matrix <- year.plot.matrix[c(plant.positions,fv.positions),
-                                        c(plant.positions,fv.positions)]
-          
-        }else if(guild.combinations[i.guild] == "floral visitors"){
-          
-          my.matrix <- year.plot.matrix[fv.positions,fv.positions]
-          
-        }else if(guild.combinations[i.guild] == "herbivores"){
-          
-          my.matrix <- year.plot.matrix[herb.positions,herb.positions]
-          
-        }else if(guild.combinations[i.guild] == "plants-herbivores"){
-          
-          my.matrix <- year.plot.matrix[c(plant.positions,herb.positions),
-                                        c(plant.positions,herb.positions)]
-          
-        }else if(guild.combinations[i.guild] == "all"){
-          
-          my.matrix <- year.plot.matrix
-        }
-        
-        A <- -my.matrix
-        # diag(A) <- 1
-        
-        my.noise.threshold <- c(0,min(abs(my.matrix[which(my.matrix != 0)])) * 
-          noise.relative.magnitude)
-        
-        my.matrix.feas <- get_matrix_feasibility(A = A,
-                                                 bootstrap.replicates = bootstrap.replicates,
-                                                 noise.threshold = my.noise.threshold,
-                                                 noise.type = noise.type)
-        
-        # TODO Update with Alfonso's
-        my.iso.feas <- 0
-        
-        fd[[length(fd)+1]] <- data.frame(year = years[i.year],
-                                         plot = i.plot,
-                                         guild = guild.combinations[i.guild],
-                                         intraguild.type = intraguild.types[i.type],
-                                         fd.average = mean(my.matrix.feas$feasibility.domain),
-                                         fd.sd = sd(my.matrix.feas$feasibility.domain),
-                                         iso.fd = my.iso.feas)
-        
-        cat(" ...completed\n")
-      }# for i.guilds
-    }# for i.plot
-  }# for i.year
-}# for i.type - intraguild types
-  
-feasibility.df <- bind_rows(fd)
-  
+comb.fun <- function(...) {
+  mapply('rbind', ..., SIMPLIFY=FALSE)
+}
+
+feasibility.metrics <- foreach(i.id = 1:length(id.char),
+                               .combine=comb.fun, 
+                               .packages = 'tidyverse') %dopar% {
+                                 
+                                 # first, recover the parameters of each matrix
+                                 
+                                 my.type <- NA
+                                 my.year <- NA
+                                 my.plot <- NA
+                                 my.guild <- NA
+                                 
+                                 # intraguild matrix type
+                                 if(grepl("mean_field",id.char[i.id])){
+                                   my.type <- "mean_field"
+                                 }else if(grepl("phenology_nesting_larvae",id.char[i.id])){
+                                   my.type <- "phenology_nesting_larvae"
+                                 }else if(grepl("phenology",id.char[i.id])){
+                                   my.type <- "phenology"
+                                 }else if(grepl("nesting",id.char[i.id])){
+                                   my.type <- "nesting"
+                                 }else if(grepl("larvae",id.char[i.id])){
+                                   my.type <- "larvae"
+                                 }
+                                 
+                                 # guild
+                                 if(grepl("plants-floral visitors",id.char[i.id])){
+                                   my.guild <- "plants-floral visitors"
+                                 }else if(grepl("plants-herbivores",id.char[i.id])){
+                                   my.guild <- "plants-herbivores"
+                                 }else if(grepl("floral visitors",id.char[i.id])){
+                                   my.guild <- "floral visitors"
+                                 }else if(grepl("herbivores",id.char[i.id])){
+                                   my.guild <- "herbivores"
+                                 }else if(grepl("plants",id.char[i.id])){
+                                   my.guild <- "plants"
+                                 }else{
+                                   my.guild <- "all"
+                                 }
+                                 
+                                 # year
+                                 if(grepl("2019",id.char[i.id])){
+                                   my.year <- "2019"
+                                 }else if(grepl("2020",id.char[i.id])){
+                                   my.year <- "2020"
+                                 }
+                                 
+                                 # plot
+                                 my.plot1 <- stringr::str_remove(id.char[i.id],my.type)
+                                 my.plot2 <- stringr::str_remove(my.plot1,my.guild)
+                                 my.plot3 <- stringr::str_remove(my.plot2,my.year)
+                                 my.plot <- as.numeric(stringr::str_remove_all(my.plot3,"_"))
+                                 
+                                 # recover the matrix
+                                 year.plot.matrix <- 
+                                   community_matrices[[my.type]][[my.year]][[my.plot]]
+                                 
+                                 plant.positions <- which(rownames(year.plot.matrix) %in% 
+                                                            sp.names[[my.year]][["plants"]])
+                                 herb.positions <- which(rownames(year.plot.matrix) %in% 
+                                                           sp.names[[my.year]][["herbivores"]])
+                                 fv.positions <- which(rownames(year.plot.matrix) %in% 
+                                                         sp.names[[my.year]][["floral.visitors"]])
+                                 
+                                 if(my.guild == "plants"){
+                                   
+                                   my.matrix <- year.plot.matrix[plant.positions,plant.positions]
+                                   
+                                 }else if(my.guild == "plants-floral visitors"){
+                                   
+                                   my.matrix <- year.plot.matrix[c(plant.positions,fv.positions),
+                                                                 c(plant.positions,fv.positions)]
+                                   
+                                 }else if(my.guild == "floral visitors"){
+                                   
+                                   my.matrix <- year.plot.matrix[fv.positions,fv.positions]
+                                   
+                                 }else if(my.guild == "herbivores"){
+                                   
+                                   my.matrix <- year.plot.matrix[herb.positions,herb.positions]
+                                   
+                                 }else if(my.guild == "plants-herbivores"){
+                                   
+                                   my.matrix <- year.plot.matrix[c(plant.positions,herb.positions),
+                                                                 c(plant.positions,herb.positions)]
+                                   
+                                 }else if(my.guild == "all"){
+                                   
+                                   my.matrix <- year.plot.matrix
+                                 }
+                                 
+                                 
+                                 
+                                 # -------------------------------------------------------------------------
+                                 # obtain feasibility domains and species exclusion probabilities
+                                 
+                                 # TODO check with Alfonso
+                                 A <- -my.matrix
+                                 # diag(A) <- 1
+                                 
+                                 my.noise.threshold <- c(0,min(abs(my.matrix[which(my.matrix != 0)])) * 
+                                                           noise.relative.magnitude)
+                                 
+                                 omega.df <- feasibility_metrics(A = A,
+                                                                 omega.replicates = omega.replicates,
+                                                                 bootstrap.replicates = bootstrap.replicates,
+                                                                 noise.replicates = noise.replicates,
+                                                                 noise.threshold = noise.threshold,
+                                                                 noise.type = noise.type)
+                                 
+                                 omega.df$year <- my.year
+                                 omega.df$plot <- my.plot
+                                 omega.df$guild <- my.guild
+                                 omega.df$intraguild.type <- my.type
+                                 
+                                 sp.exclusions <- exclusion_probabilities(A = A,
+                                                                          omega.replicates = omega.replicates,
+                                                                          bootstrap.replicates = bootstrap.replicates,
+                                                                          noise.replicates = noise.replicates,
+                                                                          noise.threshold = noise.threshold,
+                                                                          noise.type = noise.type)
+                                 
+                                 sp.exclusions$year <- my.year
+                                 sp.exclusions$plot <- my.plot
+                                 sp.exclusions$guild <- my.guild
+                                 sp.exclusions$intraguild.type <- my.type
+                                 
+                                 # return
+                                 list(omega.df,sp.exclusions)
+                                 
+                               }
+
+# feasibility.df <- feasibility.metrics[[1]]
+# exclusions.df <- feasibility.metrics[[2]]
+
 # store results -----------------------------------------------------------
 
-file.name <- "feasibility_domain_observed"
-file.name <- paste("results/",file.name,vers,".csv",sep="")
+fd.name <- "feasibility_domain_observed"
+fd.name <- paste("results/",fd.name,vers,".csv",sep="")
 
-write.csv2(x = feasibility.df,file = file.name,
+exc.name <- "exclusion_probabilities_observed"
+exc.name <- paste("results/",exc.name,vers,".csv",sep="")
+
+write.csv2(x = feasibility.metrics[[1]],file = fd.name,
+           row.names = FALSE)
+write.csv2(x =  feasibility.metrics[[2]],file = exc.name,
            row.names = FALSE)
 
 # repeat for null matrices ------------------------------------------------
@@ -149,95 +240,171 @@ if(calculate.null){
   
   load(paste("results/",file.name,sep=""))
   
-  # define results ----------------------------------------------------------
+  null.id <- expand.grid(intraguild.types,years,plots,guild.combinations,paste("r",1:null.replicates,sep=""))
+  null.id.char <- paste(null.id[,1],"_",null.id[,2],"_",null.id[,3],"_",null.id[,4],"_",null.id[,5],sep="")
   
-  null.fd <- list()
+  # calculate feasibility metrics  -------------------------------------------
   
-  # calculate feasibility domain  -------------------------------------------
-  for(i.type in 1:intraguild.types){
-    for(i.rep in 1:null.replicates){
-      for(i.year in 1:length(years)){
-        for(i.plot in plots){
-          
-          year.plot.matrix <-
-            null_matrices[[i.type]][[i.rep]][[as.character(years[i.year])]][[i.plot]]
-          
-          if(!is.null(year.plot.matrix)){
-            
-            plant.positions <- which(rownames(year.plot.matrix) %in%
-                                       sp.names[[i.year]][["plants"]])
-            herb.positions <- which(rownames(year.plot.matrix) %in%
-                                      sp.names[[i.year]][["herbivores"]])
-            fv.positions <- which(rownames(year.plot.matrix) %in%
-                                    sp.names[[i.year]][["floral.visitors"]])
-            
-            for(i.guild in 1:length(guild.combinations)){
-              
-              cat("null rep",i.rep,"-",years[i.year],"-",i.plot,"-",
-                  guild.combinations[i.guild])
-              
-              if(guild.combinations[i.guild] == "plants"){
-                
-                my.matrix <- year.plot.matrix[plant.positions,plant.positions]
-                
-              }else if(guild.combinations[i.guild] == "plants-floral visitors"){
-                
-                my.matrix <- year.plot.matrix[c(plant.positions,fv.positions),
-                                              c(plant.positions,fv.positions)]
-                
-              }else if(guild.combinations[i.guild] == "floral visitors"){
-                
-                my.matrix <- year.plot.matrix[fv.positions,fv.positions]
-                
-              }else if(guild.combinations[i.guild] == "herbivores"){
-                
-                my.matrix <- year.plot.matrix[herb.positions,herb.positions]
-                
-              }else if(guild.combinations[i.guild] == "plants-herbivores"){
-                
-                my.matrix <- year.plot.matrix[c(plant.positions,herb.positions),
-                                              c(plant.positions,herb.positions)]
-                
-              }else if(guild.combinations[i.guild] == "all"){
-                
-                my.matrix <- year.plot.matrix
-              }
-              
-              A <- -my.matrix
-              # diag(A) <- 1
-              
-              my.matrix.feas <- get_matrix_feasibility(A = A,
-                                                       bootstrap.replicates = bootstrap.replicates,
-                                                       noise.threshold = noise.threshold[[i.year]][[i.plot]],
-                                                       noise.type = noise.type)
-              
-              # cat(" fd:",round(mean(my.matrix.feas$feasibility.domain),3))
-              
-              null.fd[[length(fd)+1]] <- data.frame(year = years[i.year],
-                                                    plot = i.plot,
-                                                    guild = guild.combinations[i.guild],
-                                                    replicate = i.rep,
-                                                    intraguild.type = intraguild.types[i.type],
-                                                    fd.average = mean(my.matrix.feas$feasibility.domain),
-                                                    fd.sd = sd(my.matrix.feas$feasibility.domain),
-                                                    iso.fd = my.iso.feas)
-              
-              cat(" ...completed\n")
-            }# if !is.null
-            
-          }# for i.guilds
-        }# for i.plot
-      }# for i.year
-    }# for i.rep
-  }# for i.type
-  feasibility.df.null <- bind_rows(fd)
+  null.feasibility.metrics <- foreach(i.id = 1:length(null.id.char),
+                                      # .combine=comb.fun, 
+                                      .packages = 'tidyverse') %dopar% {
+                                        
+                                        my.type <- NA
+                                        my.year <- NA
+                                        my.plot <- NA
+                                        my.guild <- NA
+                                        my.rep <- NA
+                                        
+                                        # intraguild matrix type
+                                        if(grepl("mean_field",null.id.char[i.id])){
+                                          my.type <- "mean_field"
+                                        }else if(grepl("phenology_nesting_larvae",null.id.char[i.id])){
+                                          my.type <- "phenology_nesting_larvae"
+                                        }else if(grepl("phenology",null.id.char[i.id])){
+                                          my.type <- "phenology"
+                                        }else if(grepl("nesting",null.id.char[i.id])){
+                                          my.type <- "nesting"
+                                        }else if(grepl("larvae",null.id.char[i.id])){
+                                          my.type <- "larvae"
+                                        }
+                                        
+                                        # guild
+                                        if(grepl("plants-floral visitors",null.id.char[i.id])){
+                                          my.guild <- "plants-floral visitors"
+                                        }else if(grepl("plants-herbivores",null.id.char[i.id])){
+                                          my.guild <- "plants-herbivores"
+                                        }else if(grepl("floral visitors",null.id.char[i.id])){
+                                          my.guild <- "floral visitors"
+                                        }else if(grepl("herbivores",null.id.char[i.id])){
+                                          my.guild <- "herbivores"
+                                        }else if(grepl("plants",null.id.char[i.id])){
+                                          my.guild <- "plants"
+                                        }else{
+                                          my.guild <- "all"
+                                        }
+                                        
+                                        # year
+                                        if(grepl("2019",null.id.char[i.id])){
+                                          my.year <- "2019"
+                                        }else if(grepl("2020",null.id.char[i.id])){
+                                          my.year <- "2020"
+                                        }
+                                        
+                                        # replicate
+                                        rep.pos <- gregexpr("_r",null.id.char[i.id])[[1]][1]
+                                        my.rep <- as.numeric(substr(null.id.char[i.id],rep.pos+2,nchar(null.id.char[i.id])))
+                                        
+                                        # plot
+                                        my.plot1 <- stringr::str_remove(null.id.char[i.id],my.type)
+                                        my.plot2 <- stringr::str_remove(my.plot1,my.guild)
+                                        my.plot3 <- stringr::str_remove(my.plot2,my.year)
+                                        my.plot4 <- stringr::str_remove(my.plot3,paste("_r",my.rep,sep=""))
+                                        my.plot <- as.numeric(stringr::str_remove_all(my.plot4,"_"))
+                                        
+                                        
+                                        year.plot.matrix <-
+                                          community_matrices_null[[my.type]][[my.rep]][[my.year]][[my.plot]]
+                                        
+                                        if(!is.na(year.plot.matrix)){
+                                          
+                                          plant.positions <- which(rownames(year.plot.matrix) %in%
+                                                                     sp.names[[my.year]][["plants"]])
+                                          herb.positions <- which(rownames(year.plot.matrix) %in%
+                                                                    sp.names[[my.year]][["herbivores"]])
+                                          fv.positions <- which(rownames(year.plot.matrix) %in%
+                                                                  sp.names[[my.year]][["floral.visitors"]])
+                                          
+                                          # cat("null rep",i.rep,"-",years[i.year],"-",i.plot,"-",
+                                          #     guild.combinations[i.guild])
+                                          
+                                          if(my.guild == "plants"){
+                                            
+                                            my.matrix <- year.plot.matrix[plant.positions,plant.positions]
+                                            
+                                          }else if(my.guild == "plants-floral visitors"){
+                                            
+                                            my.matrix <- year.plot.matrix[c(plant.positions,fv.positions),
+                                                                          c(plant.positions,fv.positions)]
+                                            
+                                          }else if(my.guild == "floral visitors"){
+                                            
+                                            my.matrix <- year.plot.matrix[fv.positions,fv.positions]
+                                            
+                                          }else if(my.guild == "herbivores"){
+                                            
+                                            my.matrix <- year.plot.matrix[herb.positions,herb.positions]
+                                            
+                                          }else if(my.guild == "plants-herbivores"){
+                                            
+                                            my.matrix <- year.plot.matrix[c(plant.positions,herb.positions),
+                                                                          c(plant.positions,herb.positions)]
+                                            
+                                          }else if(my.guild == "all"){
+                                            
+                                            my.matrix <- year.plot.matrix
+                                          }
+                                          
+                                          # TODO check with Alfonso
+                                          A <- -my.matrix
+                                          # diag(A) <- 1
+                                          
+                                          my.noise.threshold <- c(0,min(abs(my.matrix[which(my.matrix != 0)])) * 
+                                                                    noise.relative.magnitude)
+                                          
+                                          omega.df <- feasibility_metrics(A = A,
+                                                                          omega.replicates = omega.replicates,
+                                                                          bootstrap.replicates = bootstrap.replicates,
+                                                                          noise.replicates = noise.replicates,
+                                                                          noise.threshold = noise.threshold,
+                                                                          noise.type = noise.type)
+                                          # omega.df <- data.frame(id.char = null.id.char[i.id])
+                                          
+                                          omega.df$year <- my.year
+                                          omega.df$plot <- my.plot
+                                          omega.df$guild <- my.guild
+                                          omega.df$intraguild.type <- my.type
+                                          omega.df$replicate <- my.rep
+                                          
+                                          sp.exclusions <- exclusion_probabilities(A = A,
+                                                                                   omega.replicates = omega.replicates,
+                                                                                   bootstrap.replicates = bootstrap.replicates,
+                                                                                   noise.replicates = noise.replicates,
+                                                                                   noise.threshold = noise.threshold,
+                                                                                   noise.type = noise.type)
+                                          # sp.exclusions <- data.frame(id.char = null.id.char[i.id])
+                                          
+                                          sp.exclusions$year <- my.year
+                                          sp.exclusions$plot <- my.plot
+                                          sp.exclusions$guild <- my.guild
+                                          sp.exclusions$intraguild.type <- my.type
+                                          sp.exclusions$replicate <- my.rep
+                                          
+                                          list(omega.df,sp.exclusions)
+                                        }# if !is.na the matrix
+                                      }
+  
+  feas.metrics <- sapply(null.feasibility.metrics,function(x) x[1])
+  sp.metrics <- sapply(null.feasibility.metrics,function(x) x[2])
+  
+  feas.df <- bind_rows(feas.metrics)
+  sp.df <- bind_rows(sp.metrics)
   
   # store results -----------------------------------------------------------
   
-  file.name <- "feasibility_domain_null"
-  file.name <- paste("results/",file.name,vers,".csv",sep="")
+  null.fd.name <- "feasibility_domain_null"
+  null.fd.name <- paste("results/",null.fd.name,vers,".csv",sep="")
   
-  write.csv2(x = feasibility.df.null,file = file.name,
+  null.exc.name <- "exclusion_probabilities_null"
+  null.exc.name <- paste("results/",null.exc.name,vers,".csv",sep="")
+  
+  write.csv2(x = feas.df,file = null.fd.name,
+             row.names = FALSE)
+  write.csv2(x = sp.df,file = null.exc.name,
              row.names = FALSE)
   
 }# if calculate.null
+
+stopCluster(cl)
+
+
+
