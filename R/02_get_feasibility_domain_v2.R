@@ -18,10 +18,10 @@ list.files("R/feasibility_functions/", full.names = TRUE) %>% map(source)
 
 # set number of cores -----------------------------------------------------
 
-workers <- 8
-cl <- makeCluster(workers)
+workers <- 4
+# cl <- makeCluster(workers)
 # register the cluster for using foreach
-registerDoParallel(cl)
+registerDoParallel(workers)
 
 # -------------------------------------------------------------------------
 # which version do we read?
@@ -85,6 +85,8 @@ comb.fun <- function(...) {
   mapply('rbind', ..., SIMPLIFY=FALSE)
 }
 
+# id.char <- id.char[1:10]
+
 feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                .combine=comb.fun, 
                                .packages = c("tidyverse","foreach","matlib",
@@ -92,14 +94,8 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                              "boot","CValternatives",
                                              "MultitrophicFun")) %dopar% {
                                  
-                                 # library(MultitrophicFun)
-                                 # library(matlib) # to multiply matrices
-                                 # library(nleqslv) # to solve non-linear equations
-                                 # library(zipfR) # beta incomplete function to estimate the area of d-dimensional spherical caps 
-                                 # library(pracma) # to solve n-dimensional cross products
-                                 # library(boot) # to bootstrap
-                                 # library(CValternatives) # to estimate PV index
-                                 
+                                 # cat(id.char[i.id],"- started\n")
+                                               
                                  list.files("/home/david/Work/Projects/EBD/multitrophic_feasibility/R/feasibility_functions/", 
                                             full.names = TRUE) %>% map(source)
                                  
@@ -198,7 +194,7 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                  A <- -my.matrix
                                  # diag(A) <- 1
                                  
-                                 my.noise.threshold <- c(0,min(abs(my.matrix[which(my.matrix != 0)])) * 
+                                 my.noise.threshold <- c(0,min(abs(A[which(A != 0)])) * 
                                                            noise.relative.magnitude)
                                  
                                  omega.df <- feasibility_metrics(A = A,
@@ -233,7 +229,7 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                  sp.exclusions$guild <- my.guild
                                  sp.exclusions$intraguild.type <- my.type
                                  
-                                 cat(id.char[i.id],"- completed\n")
+                                 # cat(id.char[i.id],"- completed\n")
                                  
                                  # return
                                  list(omega.df,sp.exclusions)
@@ -443,7 +439,7 @@ if(calculate.null){
   
 }# if calculate.null
 
-stopCluster(cl)
+# stopCluster()
 
 
 

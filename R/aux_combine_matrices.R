@@ -64,6 +64,10 @@ aux_combine_matrices <- function(pp.all.years,
   
   
   # -------------------------------------------------------------------------
+  
+  # aux function
+  range01 <- function(x){(x-min(x))/(max(x)-min(x))}
+  
   # auxiliary function for randomizing matrices while preventing it from
   # getting stuck
   swap.fun <- function(A,time.limit, verbose = FALSE){
@@ -486,17 +490,10 @@ aux_combine_matrices <- function(pp.all.years,
     for(i.year in 1:length(years)){
       for(i.plot in 1:length(plots)){
         
-        # plants - equivalent to mean field
-        pp.num <- nrow(pp.all.years[[i.year]][[i.plot]]) * 
-          ncol(pp.all.years[[i.year]][[i.plot]])
-        
-        p_intraguild[[i.year]][[i.plot]] <- 
-          # matrix(data = rep(mean(pp.all.years[[i.year]][[i.plot]]),pp.num),
-          matrix(data = rep(mean.field.offdiag,pp.num),
-                 nrow = nrow(pp.all.years[[i.year]][[i.plot]]),
-                 dimnames = list(rownames(pp.all.years[[i.year]][[i.plot]]),
-                                 colnames(pp.all.years[[i.year]][[i.plot]])))
-        
+        # plants 
+        # normalise plant observations to make them comparable with animals
+        # apply works weird, joins by column, hence the transpose
+        p_intraguild[[i.year]][[i.plot]] <- t(apply(pp.all.years[[i.year]][[i.plot]],MARGIN = 1,FUN = range01,simplify = T))
         diag(p_intraguild[[i.year]][[i.plot]]) <- mean.field.diag
         
         # nesting and larval competition
@@ -655,8 +652,13 @@ aux_combine_matrices <- function(pp.all.years,
           }# for j
         }# for i
         
+        # normalise plant observations to make them comparable with animals
+        # apply works weird, joins by column, hence the transpose
+        norm.plants.matrix <- t(apply(pp.all.years[[i.year]][[i.plot]],MARGIN = 1,FUN = range01,simplify = T))
+        diag(norm.plants.matrix) <- mean.field.diag
+        
         # weight the plant observations by phenological overlap
-        p_intraguild[[i.year]][[i.plot]] <- pp.all.years[[i.year]][[i.plot]] * p.overlap.matrix
+        p_intraguild[[i.year]][[i.plot]] <- norm.plants.matrix * p.overlap.matrix
         
       }# for i.plot
     }# for i.year
