@@ -23,7 +23,9 @@ exclusion_probabilities_par_bootstrap <- function(A_int, replicates = 1e3){
     
     A_int_mod[,i] <- -I
     
-    feasibility_parts[i, ] <- Omega_song_et_al_par_bootstrap(A_int_mod, replicates)
+    feasibility_parts[i, ] <- Omega_song_et_al_par_bootstrap(A_int_mod, 
+                                                             replicates,
+                                                             parallelize = FALSE)
     
   }
   

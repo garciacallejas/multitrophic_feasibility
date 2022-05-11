@@ -1,4 +1,4 @@
-Omega_song_et_al_par_bootstrap <- function(A_int, replicates = 1e3, parallelize = TRUE) {
+Omega_song_et_al_par_bootstrap <- function(A_int, replicates = 1e3, parallelize = FALSE) {
   
   Sigma <- solve(t(A_int) %*% A_int,tol = 1e-17)
   S <- ncol(A_int)

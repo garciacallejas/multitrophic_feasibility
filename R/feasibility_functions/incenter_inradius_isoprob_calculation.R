@@ -42,7 +42,7 @@ incenter_inradius_isoprob_calculation <- function(A_int){
   # probability of the isotropic area: Area of the spherical cap with angle theta/ Area of full circle
   a_par <- 0.5*(dimensions-1)
   b_par <- 0.5
-  probability_sp_cap <- 0.5*Rbeta(sin_theta*sin_theta,a_par,b_par)
+  probability_sp_cap <- 0.5*zipfR::Rbeta(sin_theta*sin_theta,a_par,b_par)
   
   return(list(I,asin(sin_theta),probability_sp_cap))
   

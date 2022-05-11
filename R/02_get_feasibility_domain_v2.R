@@ -18,7 +18,7 @@ list.files("R/feasibility_functions/", full.names = TRUE) %>% map(source)
 
 # set number of cores -----------------------------------------------------
 
-workers <- 4
+workers <- 8
 cl <- makeCluster(workers)
 # register the cluster for using foreach
 registerDoParallel(cl)
@@ -53,7 +53,7 @@ intraguild.types <- names(community_matrices)
 
 # set important constants -------------------------------------------------
 # number of null replicates
-null.replicates <- length(community_matrices_null[[1]])
+# null.replicates <- length(community_matrices_null[[1]])
 
 # replicates for the feasibility calculations
 omega.replicates <- 10
@@ -87,7 +87,21 @@ comb.fun <- function(...) {
 
 feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                .combine=comb.fun, 
-                               .packages = 'tidyverse') %dopar% {
+                               .packages = c("tidyverse","foreach","matlib",
+                                             "nleqslv","zipfR","pracma",
+                                             "boot","CValternatives",
+                                             "MultitrophicFun")) %dopar% {
+                                 
+                                 # library(MultitrophicFun)
+                                 # library(matlib) # to multiply matrices
+                                 # library(nleqslv) # to solve non-linear equations
+                                 # library(zipfR) # beta incomplete function to estimate the area of d-dimensional spherical caps 
+                                 # library(pracma) # to solve n-dimensional cross products
+                                 # library(boot) # to bootstrap
+                                 # library(CValternatives) # to estimate PV index
+                                 
+                                 list.files("/home/david/Work/Projects/EBD/multitrophic_feasibility/R/feasibility_functions/", 
+                                            full.names = TRUE) %>% map(source)
                                  
                                  # first, recover the parameters of each matrix
                                  
@@ -177,8 +191,6 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                    my.matrix <- year.plot.matrix
                                  }
                                  
-                                 
-                                 
                                  # -------------------------------------------------------------------------
                                  # obtain feasibility domains and species exclusion probabilities
                                  
@@ -221,6 +233,8 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
                                  sp.exclusions$guild <- my.guild
                                  sp.exclusions$intraguild.type <- my.type
                                  
+                                 cat(id.char[i.id],"- completed\n")
+                                 
                                  # return
                                  list(omega.df,sp.exclusions)
                                  
@@ -244,16 +258,16 @@ feasibility.metrics <- foreach(i.id = 1:length(id.char),
 
 # store results -----------------------------------------------------------
 # 
-# fd.name <- "feasibility_domain_observed"
-# fd.name <- paste("results/",fd.name,vers,".csv",sep="")
-# 
-# exc.name <- "exclusion_probabilities_observed"
-# exc.name <- paste("results/",exc.name,vers,".csv",sep="")
-# 
-# write.csv2(x = feasibility.metrics[[1]],file = fd.name,
-#            row.names = FALSE)
-# write.csv2(x =  feasibility.metrics[[2]],file = exc.name,
-#            row.names = FALSE)
+fd.name <- "feasibility_domain_observed"
+fd.name <- paste("results/",fd.name,vers,".csv",sep="")
+
+exc.name <- "exclusion_probabilities_observed"
+exc.name <- paste("results/",exc.name,vers,".csv",sep="")
+
+write.csv2(x = feasibility.metrics[[1]],file = fd.name,
+           row.names = FALSE)
+write.csv2(x =  feasibility.metrics[[2]],file = exc.name,
+           row.names = FALSE)
 
 # repeat for null matrices ------------------------------------------------
 if(calculate.null){
