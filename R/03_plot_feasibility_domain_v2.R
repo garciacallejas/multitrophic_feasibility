@@ -8,6 +8,10 @@ library(colorblindr)
 # vers <- "_v2"
 vers <- ""
 
+# temp
+# fd.files <- list.files(path = "results",pattern = "fd_*",full.names = T)
+# fd.observed <- fd.files %>% map_dfr(read.csv2)
+
 file.name <- "results/feasibility_domain_observed"
 null.name <- "results/feasibility_domain_null"
 # mean.field.name <- "results/feasibility_domain_mean_field"
@@ -42,7 +46,7 @@ fd.observed$type <- "observed"
 # names(fd.null.2)[c(4,5)] <- c("fd.average","fd.sd")
 
 fd.all <- fd.observed
-
+fd.all$fd.average <- fd.all$omega_mean
 # fd.all <- bind_rows(fd.observed,fd.null.2,fd.mf)
 
 fd.all$guild <- factor(fd.all$guild,levels = c("plants",
@@ -110,6 +114,17 @@ p3 <- ggplot(fd.all.nona, aes(y = intraguild.type, x = fd.average)) +
   # scale_x_continuous(breaks=seq(0,0.5,by = 0.05), limits = c(0,0.5)) +
   NULL
 # p3
+
+# -------------------------------------------------------------------------
+
+ip <- ggplot(fd.all) + 
+  geom_point(aes(x = omega_mean, y = isotropy_index_mean, color = intraguild.type)) +
+  # geom_errorbar(aes(y = isotropy_index_mean, x = guild,
+  #                                    ymin = isotropy_index_lowerCI,
+  #                                    ymax = isotropy_index_upperCI,
+  #                                    color = intraguild.type)) +
+  facet_grid(intraguild.type~.)+
+  NULL
 
 
 # store plot --------------------------------------------------------------

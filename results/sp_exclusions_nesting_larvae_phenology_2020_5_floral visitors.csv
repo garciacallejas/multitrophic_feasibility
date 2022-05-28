@@ -1,0 +1,6 @@
+"";"species";"prob_excl_mean";"prob_excl_lowerCI";"prob_excl_upperCI";"year";"plot";"guild";"intraguild.type"
+"1";"Cylindromyia_spp";0,164802527461569;0,164794055270992;0,164811204569316;"2020";5;"floral visitors";"nesting_larvae_phenology"
+"2";"Lasioglossum_malachurum";0,19991877173225;0,199914826945027;0,199922883705403;"2020";5;"floral visitors";"nesting_larvae_phenology"
+"3";"Lasioglossum_spp";0,199919528644909;0,19991554902169;0,199923391444934;"2020";5;"floral visitors";"nesting_larvae_phenology"
+"4";"Musca_spp";0,217683754506077;0,217675920562806;0,217691093124045;"2020";5;"floral visitors";"nesting_larvae_phenology"
+"5";"Ulidiidae";0,217675417655195;0,217669360773022;0,217681607261699;"2020";5;"floral visitors";"nesting_larvae_phenology"

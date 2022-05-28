@@ -1,0 +1,6 @@
+"";"species";"prob_excl_mean";"prob_excl_lowerCI";"prob_excl_upperCI";"year";"plot";"guild";"intraguild.type"
+"1";"Colias_croceus";0,200026615761139;0,199883665821172;0,200162235596216;"2020";4;"floral visitors";"mean_field"
+"2";"Lasioglossum_immunitum";0,199832068633284;0,199692058176908;0,199970553725281;"2020";4;"floral visitors";"mean_field"
+"3";"Lasioglossum_malachurum";0,199962875810681;0,199825592869636;0,200106085212558;"2020";4;"floral visitors";"mean_field"
+"4";"Lasioglossum_spp";0,200182108994621;0,200031903922475;0,200323087678607;"2020";4;"floral visitors";"mean_field"
+"5";"Ulidiidae";0,199996330800275;0,199818526470016;0,200180685400366;"2020";4;"floral visitors";"mean_field"

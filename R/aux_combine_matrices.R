@@ -68,36 +68,56 @@ aux_combine_matrices <- function(pp.all.years,
   # aux function
   range01 <- function(x){(x-min(x))/(max(x)-min(x))}
   
+  # -------------------------------------------------------------------------
+  # simple function to randomize a matrix keeping the diagonal elements fixed
+  # it simply reshuffles the non-diagonal elements randomly, therefore
+  # does not keep marginals or node degrees, but it does keep connectance.
+  # Include a flag for non-square matrices, in which diagonal elements are not
+  # intra-specific coefs.
+  
+  reshuffle_matrix <- function(A, keep.diag = TRUE){
+    A_rand <- A
+    
+    if(keep.diag){
+      non.diag <- A[row(A) != col(A)]
+      A_rand[row(A_rand) != col(A_rand)] <- sample(non.diag,length(non.diag))
+    }else{
+      A_rand[] <- sample(A,length(A))
+    }
+    return(A_rand)
+  }
+  
+  # -------------------------------------------------------------------------
   # auxiliary function for randomizing matrices while preventing it from
   # getting stuck
-  swap.fun <- function(A,time.limit, verbose = FALSE){
-    
-    res <- tryCatch(
-      {
-        R.utils::withTimeout(bipartite::swap.web(1,(A*1e3)), timeout = time.limit)                    
-      }
-      ,TimeoutException = function(ex) NA
-    )
-    # trycatch returns a list, check if error and return the matrix
-    if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
-    
-    # if it does not work, start over again
-    # up to #counter times
-    counter <- 0
-    while(sum(is.na(res))>0 & counter < 5){
-      if(verbose) print(paste("swap.web restarted for the ",counter, " time",sep=""))
-      res <- tryCatch(
-        {
-          R.utils::withTimeout(bipartite::swap.web(1,(A*1e3)), timeout = time.limit)                    
-        }
-        ,TimeoutException = function(ex) NA
-      )
-      counter <- counter + 1
-      # trycatch returns a list, check if error and return the matrix
-      if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
-    }
-    return <- res
-  }
+  # swap.fun <- function(A,time.limit, verbose = FALSE){
+  #   
+  #   res <- tryCatch(
+  #     {
+  #       R.utils::withTimeout(bipartite::swap.web(1,(A*1e3)), timeout = time.limit)                    
+  #     }
+  #     ,TimeoutException = function(ex) NA
+  #   )
+  #   # trycatch returns a list, check if error and return the matrix
+  #   if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
+  #   
+  #   # if it does not work, start over again
+  #   # up to #counter times
+  #   counter <- 0
+  #   while(sum(is.na(res))>0 & counter < 5){
+  #     if(verbose) print(paste("swap.web restarted for the ",counter, " time",sep=""))
+  #     res <- tryCatch(
+  #       {
+  #         R.utils::withTimeout(bipartite::swap.web(1,(A*1e3)), timeout = time.limit)                    
+  #       }
+  #       ,TimeoutException = function(ex) NA
+  #     )
+  #     counter <- counter + 1
+  #     # trycatch returns a list, check if error and return the matrix
+  #     if(sum(is.na(res[[1]])) == 0) res <- res[[1]]/1e3
+  #   }
+  #   return <- res
+  # }
   # -------------------------------------------------------------------------
   
   # constants
@@ -879,75 +899,77 @@ aux_combine_matrices <- function(pp.all.years,
         
         # intraguild matrices
         # plants
-        p_intraguild.null[[i.year]][[i.plot]] <- 
+        p_intraguild.null[[i.year]][[i.plot]] <- reshuffle_matrix(p_intraguild[[i.year]][[i.plot]])
           # (bipartite::swap.web(1,(p_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
-          swap.fun(p_intraguild[[i.year]][[i.plot]],time.limit)
-        
-        if(all(!is.na(p_intraguild.null[[i.year]][[i.plot]]))){
-          colnames(p_intraguild.null[[i.year]][[i.plot]]) <- 
-            colnames(p_intraguild[[i.year]][[i.plot]])
-          rownames(p_intraguild.null[[i.year]][[i.plot]]) <- 
-            rownames(p_intraguild[[i.year]][[i.plot]])
-        }else{
-          na.matrices[[i.year]][[i.plot]][1] <- TRUE
-        }
+        #   swap.fun(p_intraguild[[i.year]][[i.plot]],time.limit)
+        # 
+        # if(all(!is.na(p_intraguild.null[[i.year]][[i.plot]]))){
+        #   colnames(p_intraguild.null[[i.year]][[i.plot]]) <- 
+        #     colnames(p_intraguild[[i.year]][[i.plot]])
+        #   rownames(p_intraguild.null[[i.year]][[i.plot]]) <- 
+        #     rownames(p_intraguild[[i.year]][[i.plot]])
+        # }else{
+        #   na.matrices[[i.year]][[i.plot]][1] <- TRUE
+        # }
         # floral visitors
-        fv_intraguild.null[[i.year]][[i.plot]] <- 
+        fv_intraguild.null[[i.year]][[i.plot]] <- reshuffle_matrix(fv_intraguild[[i.year]][[i.plot]])
           # (bipartite::swap.web(1,(fv_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
-          swap.fun(fv_intraguild[[i.year]][[i.plot]],time.limit)
-        
-        if(all(!is.na(fv_intraguild.null[[i.year]][[i.plot]]))){
-          colnames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
-            colnames(fv_intraguild[[i.year]][[i.plot]])
-          rownames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
-            rownames(fv_intraguild[[i.year]][[i.plot]])
-        }else{
-          na.matrices[[i.year]][[i.plot]][2] <- TRUE
-          if(verbose) print(paste("INTRAGUILD FV year ",i.year,", plot ",i.plot," FAILED",sep=""))
-        }
+        #   swap.fun(fv_intraguild[[i.year]][[i.plot]],time.limit)
+        # 
+        # if(all(!is.na(fv_intraguild.null[[i.year]][[i.plot]]))){
+        #   colnames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
+        #     colnames(fv_intraguild[[i.year]][[i.plot]])
+        #   rownames(fv_intraguild.null[[i.year]][[i.plot]]) <- 
+        #     rownames(fv_intraguild[[i.year]][[i.plot]])
+        # }else{
+        #   na.matrices[[i.year]][[i.plot]][2] <- TRUE
+        #   if(verbose) print(paste("INTRAGUILD FV year ",i.year,", plot ",i.plot," FAILED",sep=""))
+        # }
         
         # herbivores
-        h_intraguild.null[[i.year]][[i.plot]] <- 
+        h_intraguild.null[[i.year]][[i.plot]] <- reshuffle_matrix(h_intraguild[[i.year]][[i.plot]])
           # (bipartite::swap.web(1,(h_intraguild[[i.year]][[i.plot]])*1e3)[[1]])/1e3
-          swap.fun(h_intraguild[[i.year]][[i.plot]],time.limit)
-        
-        if(all(!is.na(h_intraguild.null[[i.year]][[i.plot]]))){
-          colnames(h_intraguild.null[[i.year]][[i.plot]]) <- 
-            colnames(h_intraguild[[i.year]][[i.plot]])
-          rownames(h_intraguild.null[[i.year]][[i.plot]]) <- 
-            rownames(h_intraguild[[i.year]][[i.plot]])
-        }else{
-          na.matrices[[i.year]][[i.plot]][3] <- TRUE
-        }
+        #   swap.fun(h_intraguild[[i.year]][[i.plot]],time.limit)
+        # 
+        # if(all(!is.na(h_intraguild.null[[i.year]][[i.plot]]))){
+        #   colnames(h_intraguild.null[[i.year]][[i.plot]]) <- 
+        #     colnames(h_intraguild[[i.year]][[i.plot]])
+        #   rownames(h_intraguild.null[[i.year]][[i.plot]]) <- 
+        #     rownames(h_intraguild[[i.year]][[i.plot]])
+        # }else{
+        #   na.matrices[[i.year]][[i.plot]][3] <- TRUE
+        # }
         
         # interguild matrices
         # plant-herbivores
-        ph.all.years.null[[i.year]][[i.plot]] <- 
+        ph.all.years.null[[i.year]][[i.plot]] <- reshuffle_matrix(ph.all.years[[i.year]][[i.plot]],
+                                                                  keep.diag = F)
           # (bipartite::swap.web(1,(ph.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
-          swap.fun(ph.all.years[[i.year]][[i.plot]],time.limit)
-        
-        if(all(!is.na(ph.all.years.null[[i.year]][[i.plot]]))){
-          colnames(ph.all.years.null[[i.year]][[i.plot]]) <- 
-            colnames(ph.all.years[[i.year]][[i.plot]])
-          rownames(ph.all.years.null[[i.year]][[i.plot]]) <- 
-            rownames(ph.all.years[[i.year]][[i.plot]])
-        }else{
-          na.matrices[[i.year]][[i.plot]][4] <- TRUE
-        }
+        #   swap.fun(ph.all.years[[i.year]][[i.plot]],time.limit)
+        # 
+        # if(all(!is.na(ph.all.years.null[[i.year]][[i.plot]]))){
+        #   colnames(ph.all.years.null[[i.year]][[i.plot]]) <- 
+        #     colnames(ph.all.years[[i.year]][[i.plot]])
+        #   rownames(ph.all.years.null[[i.year]][[i.plot]]) <- 
+        #     rownames(ph.all.years[[i.year]][[i.plot]])
+        # }else{
+        #   na.matrices[[i.year]][[i.plot]][4] <- TRUE
+        # }
         
         # plant-floral visitors
-        pfv.all.years.null[[i.year]][[i.plot]] <- 
+        pfv.all.years.null[[i.year]][[i.plot]] <- reshuffle_matrix(pfv.all.years[[i.year]][[i.plot]],
+                                                                   keep.diag = F)
           # (bipartite::swap.web(1,(pfv.all.years[[i.year]][[i.plot]])*1e3)[[1]])/1e3
-          swap.fun(pfv.all.years[[i.year]][[i.plot]],time.limit)
-        
-        if(all(!is.na(pfv.all.years.null[[i.year]][[i.plot]]))){
-          colnames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
-            colnames(pfv.all.years[[i.year]][[i.plot]])
-          rownames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
-            rownames(pfv.all.years[[i.year]][[i.plot]])
-        }else{
-          na.matrices[[i.year]][[i.plot]][5] <- TRUE
-        }
+        #   swap.fun(pfv.all.years[[i.year]][[i.plot]],time.limit)
+        # 
+        # if(all(!is.na(pfv.all.years.null[[i.year]][[i.plot]]))){
+        #   colnames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
+        #     colnames(pfv.all.years[[i.year]][[i.plot]])
+        #   rownames(pfv.all.years.null[[i.year]][[i.plot]]) <- 
+        #     rownames(pfv.all.years[[i.year]][[i.plot]])
+        # }else{
+        #   na.matrices[[i.year]][[i.plot]][5] <- TRUE
+        # }
         
       }# for i.plot
     }# for i.year

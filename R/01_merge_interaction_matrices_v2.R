@@ -34,7 +34,7 @@ mean.field.diag <- 1
 # col and row totals fixed
 # null matrices are obtained for each intraguild matrix type
 
-include.null <- FALSE
+include.null <- TRUE
 replicates <- 100
 
 # read data ---------------------------------------------------------------
@@ -179,9 +179,6 @@ for(i.type in 1:length(intraguild.types)){
       
       # add to the list
       if(any(is.null(my.null.matrix))){
-        
-        # TYPE 4 FAILS, FOR INTRAGUILD FLORAL VISITORS - YEAR 2, PLOTS 7 AND 9
-        # and sometimes 1
         
         community_matrices_null[[i.type]][[i.rep]] <- NULL
         cat("********* ",i.type," - rep ",i.rep, " - FAILED ********\n",sep="")

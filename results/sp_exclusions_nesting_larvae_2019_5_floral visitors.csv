@@ -1,0 +1,8 @@
+"";"species";"prob_excl_mean";"prob_excl_lowerCI";"prob_excl_upperCI";"year";"plot";"guild";"intraguild.type"
+"1";"Dilophus_spp";0,129746597485063;0,129724074591142;0,12976936669172;"2019";5;"floral visitors";"nesting_larvae"
+"2";"Episyrphus_balteatus";0,142872904032382;0,142850407709183;0,142894915089969;"2019";5;"floral visitors";"nesting_larvae"
+"3";"Eupeodes_corollae";0,165796967744859;0,165776379693486;0,16581794943168;"2019";5;"floral visitors";"nesting_larvae"
+"4";"Musca_spp";0,114963778434124;0,114943265517981;0,114982616421083;"2019";5;"floral visitors";"nesting_larvae"
+"5";"Nemotelus_spp";0,114986791115501;0,114962755941152;0,115007252665715;"2019";5;"floral visitors";"nesting_larvae"
+"6";"Scaeva_spp";0,165810586890055;0,165791180580805;0,165828258224223;"2019";5;"floral visitors";"nesting_larvae"
+"7";"Sphaerophoria_scripta";0,165822374298017;0,165799000099378;0,165843954198419;"2019";5;"floral visitors";"nesting_larvae"
