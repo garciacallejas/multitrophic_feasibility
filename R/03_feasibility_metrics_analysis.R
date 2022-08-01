@@ -18,7 +18,7 @@ vers <- ""
 # vers <- "_v2"
 
 obs.feas <- read.csv2(here::here("results",paste("feasibility_domain_observed",vers,".csv",sep="")))
-obs.metrics <- read.csv2(here::here("results",paste("community_metrics_observed",vers,".csv",sep="")))
+obs.metrics <- read.csv2(here::here("results",paste("community_metrics",vers,".csv",sep="")))
 
 names(obs.feas)[3] <- "community"
 names(obs.metrics)[3] <- "community"
