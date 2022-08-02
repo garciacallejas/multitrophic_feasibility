@@ -9,6 +9,9 @@ library(MultitrophicFun)
 source("R/aux_linkRankModularity.R")
 source("R/aux_allowed_interactions.R")
 
+# temp
+source("R/interaction_overlap.R")
+
 # see https://ecological-complexity-lab.github.io/infomap_ecology_package/
 # Infomap should be installed on the parent folder of the project
 library(infomapecology)
@@ -24,8 +27,8 @@ include.observed <- FALSE
 # include null matrices ---------------------------------------------------
 
 include.null <- TRUE
-init.replicates <- 451
-end.replicates <- 475
+init.replicates <- 1
+end.replicates <- 1e3
 null.models <- c("diagonal dominance",
                  "topology")
 
@@ -94,6 +97,8 @@ metric.names <- c("richness",
                   "intra_inter_ratio",
                   "diagonally_dominant_sp",
                   "avg_diagonal_dominance",
+                  "avg_intraguild_niche_overlap",
+                  "avg_interguild_niche_overlap",
                   "degree_distribution",
                   "skewness",
                   "qual_modularity",
@@ -201,6 +206,134 @@ if(include.observed){
           # average degree of diagonal dominance
           my.avg.diag.dom <- mean(abs(d) - abs(nd))
           
+          # niche overlap -----------------------------------------------------------
+          # differentiate intra and inter-guild overlap
+          
+          if(guild.combinations[i.guild] %in% c("plants","floral visitors","herbivores")){
+            
+            # in these cases, only intra-guild overlap
+            pair.intra.overlap <- interaction_overlap(abs(my.matrix))
+            ov.clean <- subset(pair.intra.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            # from https://stackoverflow.com/questions/32669609/identifying-unique-pairs-of-values-from-two-columns-in-a-dataframe
+            ov.unique <-  ov.clean[!duplicated(t(apply(ov.clean, 1, sort))),]
+            
+            my.avg.intra.overlap <- mean(ov.unique$overlap,na.rm = T)
+            my.avg.inter.overlap <- NA
+            
+          }else if(guild.combinations[i.guild] == "plants-floral visitors"){
+            
+            my.intra.plants <- year.plot.matrix[plant.positions,plant.positions]
+            
+            intra.plants.overlap <- interaction_overlap(abs(my.intra.plants))
+            intra.plants.clean <- subset(intra.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            intra.plants.unique <-  intra.plants.clean[!duplicated(t(apply(intra.plants.clean, 1, sort))),]
+            
+            my.intra.fv <- year.plot.matrix[fv.positions,fv.positions]
+            
+            intra.fv.overlap <- interaction_overlap(abs(my.intra.fv))
+            intra.fv.clean <- subset(intra.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            intra.fv.unique <-  intra.fv.clean[!duplicated(t(apply(intra.fv.clean, 1, sort))),]
+            
+            my.inter.plants.fv <- year.plot.matrix[plant.positions,fv.positions]
+            
+            inter.plants.fv.overlap <- interaction_overlap(abs(my.inter.plants.fv))
+            inter.plants.fv.clean <- subset(inter.plants.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.plants.fv.unique <-  inter.plants.fv.clean[!duplicated(t(apply(inter.plants.fv.clean, 1, sort))),]
+            
+            my.inter.fv.plants <- year.plot.matrix[fv.positions,plant.positions]
+            
+            inter.fv.plants.overlap <- interaction_overlap(abs(my.inter.fv.plants))
+            inter.fv.plants.clean <- subset(inter.fv.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.fv.plants.unique <-  inter.fv.plants.clean[!duplicated(t(apply(inter.fv.plants.clean, 1, sort))),]
+            
+            my.avg.intra.overlap <- mean(c(intra.plants.unique$overlap,
+                                           intra.fv.unique$overlap))
+            my.avg.inter.overlap <- mean(c(inter.plants.fv.unique$overlap,
+                                           inter.fv.plants.unique$overlap))
+            
+          }else if(guild.combinations[i.guild] == "plants-herbivores"){
+            
+            my.intra.plants <- year.plot.matrix[plant.positions,plant.positions]
+            
+            intra.plants.overlap <- interaction_overlap(abs(my.intra.plants))
+            intra.plants.clean <- subset(intra.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            intra.plants.unique <-  intra.plants.clean[!duplicated(t(apply(intra.plants.clean, 1, sort))),]
+            
+            my.intra.herb <- year.plot.matrix[herb.positions,herb.positions]
+            
+            intra.herb.overlap <- interaction_overlap(abs(my.intra.herb))
+            intra.herb.clean <- subset(intra.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            intra.herb.unique <-  intra.herb.clean[!duplicated(t(apply(intra.herb.clean, 1, sort))),]
+            
+            my.inter.plants.herb <- year.plot.matrix[plant.positions,herb.positions]
+            
+            inter.plants.herb.overlap <- interaction_overlap(abs(my.inter.plants.herb))
+            inter.plants.herb.clean <- subset(inter.plants.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.plants.herb.unique <-  inter.plants.herb.clean[!duplicated(t(apply(inter.plants.herb.clean, 1, sort))),]
+            
+            my.inter.herb.plants <- year.plot.matrix[herb.positions,plant.positions]
+            
+            inter.herb.plants.overlap <- interaction_overlap(abs(my.inter.herb.plants))
+            inter.herb.plants.clean <- subset(inter.herb.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.herb.plants.unique <-  inter.herb.plants.clean[!duplicated(t(apply(inter.herb.plants.clean, 1, sort))),]
+            
+            my.avg.intra.overlap <- mean(c(intra.plants.unique$overlap,
+                                           intra.herb.unique$overlap))
+            my.avg.inter.overlap <- mean(c(inter.plants.herb.unique$overlap,
+                                           inter.herb.plants.unique$overlap))
+          }else{
+            
+            my.intra.plants <- year.plot.matrix[plant.positions,plant.positions]
+            
+            intra.plants.overlap <- interaction_overlap(abs(my.intra.plants))
+            intra.plants.clean <- subset(intra.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            intra.plants.unique <-  intra.plants.clean[!duplicated(t(apply(intra.plants.clean, 1, sort))),]
+            
+            my.intra.fv <- year.plot.matrix[fv.positions,fv.positions]
+            
+            intra.fv.overlap <- interaction_overlap(abs(my.intra.fv))
+            intra.fv.clean <- subset(intra.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            intra.fv.unique <-  intra.fv.clean[!duplicated(t(apply(intra.fv.clean, 1, sort))),]
+            
+            my.intra.herb <- year.plot.matrix[herb.positions,herb.positions]
+            
+            intra.herb.overlap <- interaction_overlap(abs(my.intra.herb))
+            intra.herb.clean <- subset(intra.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            intra.herb.unique <-  intra.herb.clean[!duplicated(t(apply(intra.herb.clean, 1, sort))),]
+            
+            my.inter.plants.fv <- year.plot.matrix[plant.positions,fv.positions]
+            
+            inter.plants.fv.overlap <- interaction_overlap(abs(my.inter.plants.fv))
+            inter.plants.fv.clean <- subset(inter.plants.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.plants.fv.unique <-  inter.plants.fv.clean[!duplicated(t(apply(inter.plants.fv.clean, 1, sort))),]
+            
+            my.inter.fv.plants <- year.plot.matrix[fv.positions,plant.positions]
+            
+            inter.fv.plants.overlap <- interaction_overlap(abs(my.inter.fv.plants))
+            inter.fv.plants.clean <- subset(inter.fv.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.fv.plants.unique <-  inter.fv.plants.clean[!duplicated(t(apply(inter.fv.plants.clean, 1, sort))),]
+            
+            my.inter.plants.herb <- year.plot.matrix[plant.positions,herb.positions]
+            
+            inter.plants.herb.overlap <- interaction_overlap(abs(my.inter.plants.herb))
+            inter.plants.herb.clean <- subset(inter.plants.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.plants.herb.unique <-  inter.plants.herb.clean[!duplicated(t(apply(inter.plants.herb.clean, 1, sort))),]
+            
+            my.inter.herb.plants <- year.plot.matrix[herb.positions,plant.positions]
+            
+            inter.herb.plants.overlap <- interaction_overlap(abs(my.inter.herb.plants))
+            inter.herb.plants.clean <- subset(inter.herb.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+            inter.herb.plants.unique <-  inter.herb.plants.clean[!duplicated(t(apply(inter.herb.plants.clean, 1, sort))),]
+            
+            my.avg.intra.overlap <- mean(c(intra.plants.unique$overlap,
+                                           intra.fv.unique$overlap,
+                                           intra.herb.unique$overlap))
+            my.avg.inter.overlap <- mean(c(inter.plants.herb.unique$overlap,
+                                           inter.herb.plants.unique$overlap,
+                                           inter.plants.fv.unique$overlap,
+                                           inter.fv.plants.unique$overlap))
+          }
+          
           # connectance -------------------------------------------------------------
           # for now, binary
           
@@ -264,106 +397,6 @@ if(include.observed){
                                                                                         ncol = ncol(my.matrix)),
                                                       damping = lr.damping,
                                                       pr.algo = lr.alg)
-            
-            # g  <- graph.adjacency(my.matrix,weighted=TRUE)
-            # 
-            # # To run infomap it seems that weights should be non-negative
-            # my.edge.list <- get.data.frame(g) %>% mutate(weight=abs(weight))
-            # 
-            # nodes <- my.edge.list$from %>% unique()
-            # 
-            # nodes.ID <- tibble(node_id=as.numeric(1:length(nodes)),species=nodes)
-            # 
-            # # Preparing edge.list and nodes.ID to run infomap
-            # 
-            # my.edge.list.ID <- my.edge.list %>% rename(species=from) %>%
-            #   left_join(nodes.ID,by="species") %>% select(-species) %>%
-            #   rename(from=node_id,species=to) %>%
-            #   left_join(nodes.ID,by="species") %>%
-            #   select(-species) %>% rename(to=node_id) %>% select(from,to,weight)
-            # 
-            # nodes.ID2 <- nodes.ID %>% rename(node_name=species)
-            # 
-            # infomap_mono <- create_monolayer_object(x = my.edge.list,
-            #                                         directed = T,
-            #                                         bipartite = F,
-            #                                         node_metadata = nodes.ID2[,c(2,1)])
-            # 
-            # infomap_mono2 <- infomap_mono
-            # # infomap_mono2$nodes$node_name <- as.numeric(infomap_mono2$nodes$node_name)
-            # 
-            # # Run Infomap
-            # # temp_dir <- paste("R/temp/d",i.id,sep="")
-            # # temp_dir <- "R/temp/d1"
-            # # dir.create(temp_dir)
-            # modules_relax_rate <- run_infomap_monolayer2(x = infomap_mono2,
-            #                                              flow_model = 'directed',
-            #                                              # infomap_executable = paste(infomap_dir,"Infomap",sep=""),
-            #                                              infomap_executable = "Infomap",
-            #                                              # temp_dir = temp_dir,
-            #                                              silent=T,
-            #                                              trials=1000,
-            #                                              two_level=T,
-            #                                              seed=200952)
-            # # unlink(temp_dir, recursive = TRUE)
-            # 
-            # my.modularity <- modules_relax_rate[["L"]] # modularity in bits
-            # 
-            # # Extract module information
-            # modules <- modules_relax_rate$modules %>%
-            #   dplyr::select(node_id,module_level1) %>%
-            #   rename(module=module_level1) %>%
-            #   left_join(nodes.ID,by="node_id")
-            # 
-            # 
-            # modules.aux <- tibble(year = years[i.year],
-            #                       plot = plots[i.plot],
-            #                       guild = guild.combinations[i.guild],
-            #                       species = modules$species,
-            #                       module = modules$module)
-            # 
-            # module_members <- bind_rows(module_members,modules.aux)
-            # 
-            # # If we dont want to use bits, I guess that we could translate the previous partition
-            # # to other units by uning the alternative definition of modularity
-            # # E. A. Leicht and M. E. J. Newman, Phys. Rev. Lett. 100, 118703 (2008).
-            # 
-            # # Note 2: infomap do not optimise this generalized modularity function. Thus,
-            # # I dont expect high values.
-            # 
-            # # According to results for plot 1, year 2019 and guild == "floral visitors",
-            # # it seems that it seems that isolated nodes module is NA (see species "Apoidea")
-            # # For each one of those nodes, we will add a new module. We denote such partition
-            # # as "corrected partition"
-            # 
-            # # CORRECTED partition from infomap
-            # module_max <- max(modules$module,na.rm = T)
-            # 
-            # for(i in 1:nrow(modules)){
-            #   
-            #   if(is.na(modules$module[i])){
-            #     module_max <- module_max + 1
-            #     modules$module[i] <- module_max
-            #   }
-            # }
-            # 
-            # # linkrank modularity -----------------------------------------------------
-            # # Note 1: I will use non-negative weights to be consistent with
-            # # the inputs that we used to feed the infomap algorithm.
-            # 
-            # g  <- graph.adjacency(abs(my.matrix),weighted=TRUE)
-            # 
-            # # this returns a "mask", a matrix of the same dimensions as my.matrix
-            # # with zeros if an interaction is forbidden, 1 if it is allowed.
-            # allowed.interactions.mat <- allowed.interactions(my.matrix, year.plot.matrix,
-            #                                                  guild.combinations[i.guild],
-            #                                                  sp.names, i.year)
-            # 
-            # linkrank_modularity <- linkRankModularity(g,
-            #                                           partition=modules$module,
-            #                                           allowed.interactions.mat = allowed.interactions.mat,
-            #                                           damping = lr.damping,
-            #                                           pr.algo = lr.alg)
           }else{ # less than 5 sp
             linkrank_binary_modularity <- NA_real_
             linkrank_modularity <- NA_real_
@@ -380,6 +413,8 @@ if(include.observed){
           community.metrics$value[pos[which(community.metrics$metric[pos] == "intra_inter_ratio")]] <- my.ratio
           community.metrics$value[pos[which(community.metrics$metric[pos] == "diagonally_dominant_sp")]] <- my.diag.dom.sp
           community.metrics$value[pos[which(community.metrics$metric[pos] == "avg_diagonal_dominance")]] <- my.avg.diag.dom
+          community.metrics$value[pos[which(community.metrics$metric[pos] == "avg_intraguild_niche_overlap")]] <- my.avg.intra.overlap
+          community.metrics$value[pos[which(community.metrics$metric[pos] == "avg_interguild_niche_overlap")]] <- my.avg.inter.overlap
           community.metrics$value[pos[which(community.metrics$metric[pos] == "degree_distribution")]] <- my.deg.dist
           community.metrics$value[pos[which(community.metrics$metric[pos] == "complexity")]] <- my.complexity
           community.metrics$value[pos[which(community.metrics$metric[pos] == "qual_modularity")]] <- linkrank_binary_modularity
@@ -447,6 +482,7 @@ if(include.null){
                                                     source("/home/david/Work/Projects/EBD/multitrophic_feasibility/R/aux_run_infomap_monolayer3.R")
                                                     source("/home/david/Work/Projects/EBD/multitrophic_feasibility/R/infomap_modularity.R")
                                                     source("/home/david/Work/Projects/EBD/multitrophic_feasibility/R/reshuffle_matrix.R")
+                                                    source("/home/david/Work/Projects/EBD/multitrophic_feasibility/R/interaction_overlap.R")
                                                     
                                                     # first, recover the parameters of each matrix
                                                     
@@ -554,15 +590,15 @@ if(include.null){
                                                       my.matrix <- year.plot.matrix
                                                     }
                                                     
-
+                                                    
                                                     # -------------------------------------------------------------------------
                                                     # positions in the subsetted matrix
                                                     my.plant.positions <- which(rownames(my.matrix) %in% 
-                                                                               sp.names[[my.year]][["plants"]])
+                                                                                  sp.names[[my.year]][["plants"]])
                                                     my.herb.positions <- which(rownames(my.matrix) %in% 
-                                                                              sp.names[[my.year]][["herbivores"]])
+                                                                                 sp.names[[my.year]][["herbivores"]])
                                                     my.fv.positions <- which(rownames(my.matrix) %in% 
-                                                                            sp.names[[my.year]][["floral.visitors"]])
+                                                                               sp.names[[my.year]][["floral.visitors"]])
                                                     
                                                     # -------------------------------------------------------------------------
                                                     # randomize
@@ -677,6 +713,134 @@ if(include.null){
                                                     # average degree of diagonal dominance
                                                     my.avg.diag.dom <- mean(abs(d) - abs(nd))
                                                     
+                                                    # niche overlap -----------------------------------------------------------
+                                                    # differentiate intra and inter-guild overlap
+                                                    
+                                                    if(guild.combinations[i.guild] %in% c("plants","floral visitors","herbivores")){
+                                                      
+                                                      # in these cases, only intra-guild overlap
+                                                      pair.intra.overlap <- interaction_overlap(abs(my.matrix.null))
+                                                      ov.clean <- subset(pair.intra.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      # from https://stackoverflow.com/questions/32669609/identifying-unique-pairs-of-values-from-two-columns-in-a-dataframe
+                                                      ov.unique <-  ov.clean[!duplicated(t(apply(ov.clean, 1, sort))),]
+                                                      
+                                                      my.avg.intra.overlap <- mean(ov.unique$overlap,na.rm = T)
+                                                      my.avg.inter.overlap <- NA
+                                                      
+                                                    }else if(guild.combinations[i.guild] == "plants-floral visitors"){
+                                                      
+                                                      my.intra.plants <- my.matrix.null[my.plant.positions,my.plant.positions]
+                                                      
+                                                      intra.plants.overlap <- interaction_overlap(abs(my.intra.plants))
+                                                      intra.plants.clean <- subset(intra.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      intra.plants.unique <-  intra.plants.clean[!duplicated(t(apply(intra.plants.clean, 1, sort))),]
+                                                      
+                                                      my.intra.fv <- my.matrix.null[my.fv.positions,my.fv.positions]
+                                                      
+                                                      intra.fv.overlap <- interaction_overlap(abs(my.intra.fv))
+                                                      intra.fv.clean <- subset(intra.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      intra.fv.unique <-  intra.fv.clean[!duplicated(t(apply(intra.fv.clean, 1, sort))),]
+                                                      
+                                                      my.inter.plants.fv <- my.matrix.null[my.plant.positions,my.fv.positions]
+                                                      
+                                                      inter.plants.fv.overlap <- interaction_overlap(abs(my.inter.plants.fv))
+                                                      inter.plants.fv.clean <- subset(inter.plants.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.plants.fv.unique <-  inter.plants.fv.clean[!duplicated(t(apply(inter.plants.fv.clean, 1, sort))),]
+                                                      
+                                                      my.inter.fv.plants <- my.matrix.null[my.fv.positions,my.plant.positions]
+                                                      
+                                                      inter.fv.plants.overlap <- interaction_overlap(abs(my.inter.fv.plants))
+                                                      inter.fv.plants.clean <- subset(inter.fv.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.fv.plants.unique <-  inter.fv.plants.clean[!duplicated(t(apply(inter.fv.plants.clean, 1, sort))),]
+                                                      
+                                                      my.avg.intra.overlap <- mean(c(intra.plants.unique$overlap,
+                                                                                     intra.fv.unique$overlap))
+                                                      my.avg.inter.overlap <- mean(c(inter.plants.fv.unique$overlap,
+                                                                                     inter.fv.plants.unique$overlap))
+                                                      
+                                                    }else if(guild.combinations[i.guild] == "plants-herbivores"){
+                                                      
+                                                      my.intra.plants <- my.matrix.null[my.plant.positions,my.plant.positions]
+                                                      
+                                                      intra.plants.overlap <- interaction_overlap(abs(my.intra.plants))
+                                                      intra.plants.clean <- subset(intra.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      intra.plants.unique <-  intra.plants.clean[!duplicated(t(apply(intra.plants.clean, 1, sort))),]
+                                                      
+                                                      my.intra.herb <- my.matrix.null[my.herb.positions,my.herb.positions]
+                                                      
+                                                      intra.herb.overlap <- interaction_overlap(abs(my.intra.herb))
+                                                      intra.herb.clean <- subset(intra.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      intra.herb.unique <-  intra.herb.clean[!duplicated(t(apply(intra.herb.clean, 1, sort))),]
+                                                      
+                                                      my.inter.plants.herb <- my.matrix.null[my.plant.positions,my.herb.positions]
+                                                      
+                                                      inter.plants.herb.overlap <- interaction_overlap(abs(my.inter.plants.herb))
+                                                      inter.plants.herb.clean <- subset(inter.plants.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.plants.herb.unique <-  inter.plants.herb.clean[!duplicated(t(apply(inter.plants.herb.clean, 1, sort))),]
+                                                      
+                                                      my.inter.herb.plants <- my.matrix.null[my.herb.positions,my.plant.positions]
+                                                      
+                                                      inter.herb.plants.overlap <- interaction_overlap(abs(my.inter.herb.plants))
+                                                      inter.herb.plants.clean <- subset(inter.herb.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.herb.plants.unique <-  inter.herb.plants.clean[!duplicated(t(apply(inter.herb.plants.clean, 1, sort))),]
+                                                      
+                                                      my.avg.intra.overlap <- mean(c(intra.plants.unique$overlap,
+                                                                                     intra.herb.unique$overlap))
+                                                      my.avg.inter.overlap <- mean(c(inter.plants.herb.unique$overlap,
+                                                                                     inter.herb.plants.unique$overlap))
+                                                    }else{
+                                                      
+                                                      my.intra.plants <- my.matrix.null[my.plant.positions,my.plant.positions]
+                                                      
+                                                      intra.plants.overlap <- interaction_overlap(abs(my.intra.plants))
+                                                      intra.plants.clean <- subset(intra.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      intra.plants.unique <-  intra.plants.clean[!duplicated(t(apply(intra.plants.clean, 1, sort))),]
+                                                      
+                                                      my.intra.fv <- my.matrix.null[my.fv.positions,my.fv.positions]
+                                                      
+                                                      intra.fv.overlap <- interaction_overlap(abs(my.intra.fv))
+                                                      intra.fv.clean <- subset(intra.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      intra.fv.unique <-  intra.fv.clean[!duplicated(t(apply(intra.fv.clean, 1, sort))),]
+                                                      
+                                                      my.intra.herb <- my.matrix.null[my.herb.positions,my.herb.positions]
+                                                      
+                                                      intra.herb.overlap <- interaction_overlap(abs(my.intra.herb))
+                                                      intra.herb.clean <- subset(intra.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      intra.herb.unique <-  intra.herb.clean[!duplicated(t(apply(intra.herb.clean, 1, sort))),]
+                                                      
+                                                      my.inter.plants.fv <- my.matrix.null[my.plant.positions,my.fv.positions]
+                                                      
+                                                      inter.plants.fv.overlap <- interaction_overlap(abs(my.inter.plants.fv))
+                                                      inter.plants.fv.clean <- subset(inter.plants.fv.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.plants.fv.unique <-  inter.plants.fv.clean[!duplicated(t(apply(inter.plants.fv.clean, 1, sort))),]
+                                                      
+                                                      my.inter.fv.plants <- my.matrix.null[my.fv.positions,my.plant.positions]
+                                                      
+                                                      inter.fv.plants.overlap <- interaction_overlap(abs(my.inter.fv.plants))
+                                                      inter.fv.plants.clean <- subset(inter.fv.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.fv.plants.unique <-  inter.fv.plants.clean[!duplicated(t(apply(inter.fv.plants.clean, 1, sort))),]
+                                                      
+                                                      my.inter.plants.herb <- my.matrix.null[my.plant.positions,my.herb.positions]
+                                                      
+                                                      inter.plants.herb.overlap <- interaction_overlap(abs(my.inter.plants.herb))
+                                                      inter.plants.herb.clean <- subset(inter.plants.herb.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.plants.herb.unique <-  inter.plants.herb.clean[!duplicated(t(apply(inter.plants.herb.clean, 1, sort))),]
+                                                      
+                                                      my.inter.herb.plants <- my.matrix.null[my.herb.positions,my.plant.positions]
+                                                      
+                                                      inter.herb.plants.overlap <- interaction_overlap(abs(my.inter.herb.plants))
+                                                      inter.herb.plants.clean <- subset(inter.herb.plants.overlap, sp1 != sp2 & !is.nan(overlap) & !is.na(overlap))
+                                                      inter.herb.plants.unique <-  inter.herb.plants.clean[!duplicated(t(apply(inter.herb.plants.clean, 1, sort))),]
+                                                      
+                                                      my.avg.intra.overlap <- mean(c(intra.plants.unique$overlap,
+                                                                                     intra.fv.unique$overlap,
+                                                                                     intra.herb.unique$overlap))
+                                                      my.avg.inter.overlap <- mean(c(inter.plants.herb.unique$overlap,
+                                                                                     inter.herb.plants.unique$overlap,
+                                                                                     inter.plants.fv.unique$overlap,
+                                                                                     inter.fv.plants.unique$overlap))
+                                                    }
+                                                    
                                                     # connectance -------------------------------------------------------------
                                                     # for now, binary
                                                     
@@ -724,46 +888,6 @@ if(include.null){
                                                                                                      sigma = my.sigma)
                                                     
                                                     # modularity --------------------------------------------------------------
-
-                                                    # my.matrix.a <- matrix(runif(900),nrow = 30,dimnames = list(paste("n",1:30),paste("n",1:30)))
-                                                    # my.matrix.a[my.matrix.a < 0.5] <- 1                                                                      
-                                                    # infomap_modularity(A = my.matrix.a,
-                                                    #                    allowed.interactions.mat = matrix(1,nrow = nrow(my.matrix.a),
-                                                    #                                                      ncol = ncol(my.matrix.a)),
-                                                    #                    damping = lr.damping,
-                                                    #                    pr.algo = lr.alg)
-                                                    # 
-                                                    # my.matrix.b <- my.matrix.a
-                                                    # my.matrix.b[] <- 0
-                                                    # diag(my.matrix.b) <- 1
-                                                    # # my.matrix.b[1:10,1:10] <- 2
-                                                    # # # my.matrix.b[10,11] <- 2
-                                                    # # my.matrix.b[11:20,11:20] <- 2
-                                                    # # # my.matrix.b[5,21] <- 2
-                                                    # # my.matrix.b[21:30,21:30] <- 2
-                                                    # # my.matrix.b[my.matrix.b < 2] <- 0
-                                                    # 
-                                                    # infomap_modularity(A = my.matrix.b,
-                                                    #                    allowed.interactions.mat = matrix(1,nrow = nrow(my.matrix.b),
-                                                    #                                                      ncol = ncol(my.matrix.b)),
-                                                    #                    damping = lr.damping,
-                                                    #                    pr.algo = lr.alg)
-                                                    # bin.matrix <- my.matrix
-                                                    # bin.matrix[bin.matrix != 0] <- 1
-                                                    # bin.matrix.null <- my.matrix.null
-                                                    # bin.matrix.null[bin.matrix.null != 0] <- 1
-                                                    # 
-                                                    # infomap_modularity(A = bin.matrix,
-                                                    #                    allowed.interactions.mat = matrix(1,nrow = nrow(my.matrix),
-                                                    #                                                      ncol = ncol(my.matrix)),
-                                                    #                    damping = lr.damping,
-                                                    #                    pr.algo = lr.alg)
-                                                    # 
-                                                    # infomap_modularity(A = bin.matrix.null,
-                                                    #                    allowed.interactions.mat = matrix(1,nrow = nrow(my.matrix.null),
-                                                    #                                                      ncol = ncol(my.matrix.null)),
-                                                    #                    damping = lr.damping,
-                                                    #                    pr.algo = lr.alg)
                                                     
                                                     if(nrow(my.matrix.null) >= min.node.modularity){
                                                       bin.matrix.null <- my.matrix.null
@@ -776,122 +900,17 @@ if(include.null){
                                                                                                        pr.algo = lr.alg)
                                                       
                                                       linkrank_modularity <- infomap_modularity(A = my.matrix.null,
-                                                                                          allowed.interactions.mat = matrix(1,nrow = nrow(my.matrix.null),
-                                                                                                                            ncol = ncol(my.matrix.null)),
-                                                                                          temp.dir = paste("R/temp/d",i.id,sep=""),
-                                                                                          damping = lr.damping,
-                                                                                          pr.algo = lr.alg)
-                                                      
-                                                      # g  <- graph.adjacency(my.matrix.null,weighted=TRUE)
-                                                      # 
-                                                      # # To run infomap it seems that weights should be non-negative
-                                                      # my.edge.list <- get.data.frame(g) %>% mutate(weight=abs(weight))
-                                                      # 
-                                                      # nodes <- my.edge.list$from %>% unique()
-                                                      # 
-                                                      # nodes.ID <- tibble(node_id=as.numeric(1:length(nodes)),species=nodes)
-                                                      # 
-                                                      # # Preparing edge.list and nodes.ID to run infomap
-                                                      # 
-                                                      # my.edge.list.ID <- my.edge.list %>% rename(species=from) %>%
-                                                      #   left_join(nodes.ID,by="species") %>% select(-species) %>%
-                                                      #   rename(from=node_id,species=to) %>%
-                                                      #   left_join(nodes.ID,by="species") %>%
-                                                      #   select(-species) %>% rename(to=node_id) %>% select(from,to,weight)
-                                                      # 
-                                                      # nodes.ID2 <- nodes.ID %>% rename(node_name=species)
-                                                      # 
-                                                      # infomap_mono <- create_monolayer_object(x = my.edge.list,
-                                                      #                                         directed = T,
-                                                      #                                         bipartite = F,
-                                                      #                                         node_metadata = nodes.ID2[,c(2,1)])
-                                                      # 
-                                                      # infomap_mono2 <- infomap_mono
-                                                      # # infomap_mono2$nodes$node_name <- as.numeric(infomap_mono2$nodes$node_name)
-                                                      # 
-                                                      # # run Infomap
-                                                      # temp_dir <- paste("R/temp/d",i.id,sep="")
-                                                      # # temp_dir <- "R/temp/d1"
-                                                      # dir.create(temp_dir)
-                                                      # modules_relax_rate <- run_infomap_monolayer3(x = infomap_mono2,
-                                                      #                                              flow_model = 'directed',
-                                                      #                                              # infomap_executable = paste(infomap_dir,"Infomap",sep=""),
-                                                      #                                              infomap_executable = "Infomap",
-                                                      #                                              temp_dir = temp_dir,
-                                                      #                                              silent=T,
-                                                      #                                              trials=1000,
-                                                      #                                              two_level=T,
-                                                      #                                              seed=200952)
-                                                      # unlink(temp_dir, recursive = TRUE)
-                                                      # 
-                                                      # my.modularity <- modules_relax_rate[["L"]] # modularity in bits
-                                                      # 
-                                                      # # Extract module information
-                                                      # modules <- modules_relax_rate$modules %>%
-                                                      #   dplyr::select(node_id,module_level1) %>%
-                                                      #   rename(module=module_level1) %>%
-                                                      #   left_join(nodes.ID,by="node_id")
-                                                      # 
-                                                      # 
-                                                      # modules.aux <- tibble(year = my.year,
-                                                      #                       plot = my.plot,
-                                                      #                       guild = my.guild,
-                                                      #                       species = modules$species,
-                                                      #                       module = modules$module)
-                                                      # 
-                                                      # module_members <- bind_rows(module_members,modules.aux)
-                                                      # 
-                                                      # # If we dont want to use bits, I guess that we could translate the previous partition
-                                                      # # to other units by uning the alternative definition of modularity
-                                                      # # E. A. Leicht and M. E. J. Newman, Phys. Rev. Lett. 100, 118703 (2008).
-                                                      # 
-                                                      # # Note 2: infomap do not optimise this generalized modularity function. Thus,
-                                                      # # I dont expect high values.
-                                                      # 
-                                                      # # According to results for plot 1, year 2019 and guild == "floral visitors",
-                                                      # # it seems that it seems that isolated nodes module is NA (see species "Apoidea")
-                                                      # # For each one of those nodes, we will add a new module. We denote such partition
-                                                      # # as "corrected partition"
-                                                      # 
-                                                      # # CORRECTED partition from infomap
-                                                      # module_max <- max(modules$module,na.rm = T)
-                                                      # 
-                                                      # for(i in 1:nrow(modules)){
-                                                      #   
-                                                      #   if(is.na(modules$module[i])){
-                                                      #     module_max <- module_max + 1
-                                                      #     modules$module[i] <- module_max
-                                                      #   }
-                                                      # }
-                                                      # 
-                                                      # # linkrank modularity -----------------------------------------------------
-                                                      # # Note 1: I will use non-negative weights to be consistent with
-                                                      # # the inputs that we used to feed the infomap algorithm.
-                                                      # 
-                                                      # g  <- graph.adjacency(abs(my.matrix.null),weighted=TRUE)
-                                                      # 
-                                                      # # this returns a "mask", a matrix of the same dimensions as my.matrix
-                                                      # # with zeros if an interaction is forbidden, 1 if it is allowed.
-                                                      # allowed.interactions.mat <- allowed.interactions(my.matrix.null, year.plot.matrix,
-                                                      #                                                  my.guild,
-                                                      #                                                  sp.names, my.year)
-                                                      # 
-                                                      # linkrank_modularity <- linkRankModularity(g,
-                                                      #                                           partition=modules$module,
-                                                      #                                           allowed.interactions.mat = allowed.interactions.mat,
-                                                      #                                           damping = lr.damping,
-                                                      #                                           pr.algo = lr.alg)
+                                                                                                allowed.interactions.mat = matrix(1,nrow = nrow(my.matrix.null),
+                                                                                                                                  ncol = ncol(my.matrix.null)),
+                                                                                                temp.dir = paste("R/temp/d",i.id,sep=""),
+                                                                                                damping = lr.damping,
+                                                                                                pr.algo = lr.alg)
                                                     }else{ # less than 5 sp
                                                       linkrank_binary_modularity <- NA_real_
                                                       linkrank_modularity <- NA_real_
                                                     }
                                                     # store -------------------------------------------------------------------
                                                     
-                                                    # pos <- which(community.null.metrics$intraguild.type == intraguild.types[i.type] & 
-                                                    #                community.null.metrics$year == years[i.year] &
-                                                    #                community.null.metrics$plot == i.plot &
-                                                    #                community.null.metrics$replicate == i.rep &
-                                                    #                community.null.metrics$guilds == guild.combinations[i.guild])
                                                     cm <- data.frame(intraguild.type = my.type,
                                                                      year = my.year,
                                                                      plot = my.plot,
@@ -903,6 +922,8 @@ if(include.null){
                                                                      intra_inter_ratio = my.ratio,
                                                                      diagonally_dominant_sp = my.diag.dom.sp,
                                                                      avg_diagonal_dominance = my.avg.diag.dom,
+                                                                     avg_intraguild_niche_overlap = my.avg.intra.overlap,
+                                                                     avg_interguild_niche_overlap = my.avg.inter.overlap,
                                                                      degree_distribution = my.deg.dist,
                                                                      qual_modularity = linkrank_binary_modularity,
                                                                      quant_modularity = linkrank_modularity,
@@ -911,28 +932,6 @@ if(include.null){
                                                     
                                                     # return to the list
                                                     cm
-                                                    
-                                                    # community.null.metrics[[length(community.null.metrics)+1]] <- cm
-                                                    
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "richness")]] <- my.richness
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "connectance")]] <- my.connectance
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "intra_inter_ratio")]] <- my.ratio
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "diagonally_dominant_sp")]] <- my.diag.dom.sp
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "avg_diagonal_dominance")]] <- my.avg.diag.dom
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "degree_distribution")]] <- my.deg.dist
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "modularity")]] <- linkrank_modularity
-                                                    # # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "kurtosis")]] <- my.kurtosis
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "skewness")]] <- my.skew
-                                                    # community.null.metrics$value[pos[which(community.null.metrics$metric[pos] == "complexity")]] <- my.complexity
-                                                    # }# for each replicate
-                                                    # }# for each null model
-                                                    
-                                                    # }# for i.guild
-                                                    # }# for i.plot
-                                                    # }# for i.year
-                                                    # }# for i.rep
-                                                    # }# for i.type
-                                                    
                                                   }# foreach
   # store null --------------------------------------------------------------
   cm.null.df <- bind_rows(community.null.metrics)
